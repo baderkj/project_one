@@ -15,13 +15,12 @@ module.exports = {
 
     try {
         // 1. First check if user exists
-        const users = await db.select('*').from('users').where('email', '=', email);
-        console.log(users);
-        if (users.length === 0) {
+        const user = await db.select('*').from('users').where('email', '=', email).first();
+        
+        if (!user) {
             return res.status(400).json('Wrong credentials');
         }
 
-        const user = users[0];
 
         // 2. Validate password
         const isValid =  bcrypt.compareSync(password, user.password_hash);
