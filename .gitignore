@@ -1,0 +1,24 @@
+# Example .gitignore for a React project
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Dependencies
+node_modules/
+
+# Build files
+/dist/
+/build/
+/.next/  # Next.js
+/.out/   # Vercel
+
+# IDE/Editor files
+.vscode/
+.idea/
+
+# OS/system files
+.DS_Store
+Thumbs.db
