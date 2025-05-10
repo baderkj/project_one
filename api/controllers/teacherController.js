@@ -12,14 +12,14 @@ module.exports = {
     {
         return res.status(400).json({ errors: errors.array() });
     }  
-    const {name,email,password,role,phone,birth_date,specialization,hire_date,qualification}=req.body;
+    const {name,email,password,phone,birth_date,specialization,hire_date,qualification}=req.body;
     const hash= bcrypt.hashSync(password);
     const user=await userService.createUser({
             name:name,
             birth_date:birth_date,
             email:email,
             phone:phone,
-            role:role,
+            role:'teacher',
             password_hash:hash
           });
           
