@@ -1,5 +1,5 @@
 const userService = require('../services/userService');
-const { body, validationResult } = require('express-validator');
+const {  validationResult } = require('express-validator');
 const bcrypt=require('bcrypt-nodejs');
 const {db}=require('../../config/db');
 const jwt = require('jsonwebtoken');

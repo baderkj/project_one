@@ -1,0 +1,100 @@
+const studentService = require('../services/studentService');
+const userService = require('../services/userService');
+const {  validationResult } = require('express-validator');
+
+const bcrypt=require('bcrypt-nodejs');
+module.exports = {
+  async createStudent(req, res) {
+    try {
+
+      const errors = validationResult(req);
+    if (!errors.isEmpty())
+    {
+        return res.status(400).json({ errors: errors.array() });
+    }  
+    const {name,email,password,phone,birth_date,class_id,curriculum_id,grade_level}=req.body;
+    const hash= bcrypt.hashSync(password);
+    const user=await userService.createUser({
+            name:name,
+            birth_date:birth_date,
+            email:email,
+            phone:phone,
+            role:'student',
+            password_hash:hash
+          });
+          
+          
+      const Student = await studentService.createStudent({
+        user_id:user[0].id,
+        class_id :class_id,
+        curriculum_id:curriculum_id,
+        grade_level:grade_level,
+      });
+    
+      res.status(201).json(Student);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  async getStudent(req, res) {
+    try {
+      const student = await studentService.getStudent(req.params.id);
+      if (!student) return res.status(404).json({ error: 'Student not found' });
+      res.json(student);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async getAllStudents(req, res) {
+    try {
+      const student = await studentService.getAllStudents();
+      res.json(student);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async updateStudent(req, res) {
+    try {
+      const student = await studentService.updateStudent(req.params.id, req.body);
+      if (!student) return res.status(404).json({ error: 'Student not found' });
+      res.json(student);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  async deleteStudent(req, res) {
+    try {
+      const result = await studentService.deleteStudent(req.params.id);
+      if (!result) return res.status(404).json({ error: 'Student not found' });
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  ,
+  async getStudentSubjects(req, res) {
+    try {
+     const subjects= await studentService.getSubjects(req.body.id);
+      if (!subjects) return res.status(404).json({ error: 'Student not found' });
+      res.json(subjects);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  async getClass(req, res) {
+    try {
+      const student = await studentService.getStudent(req.body.id);
+      if(!student) return res.status(404).json({error:'Student Not found'})
+     const Class= await studentService.getClass(req.body.id);
+      if (!Class) return res.status(404).json({ error: 'Class not found' });
+      res.json(Class);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+};

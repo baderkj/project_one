@@ -8,5 +8,5 @@ exports.teacherValidator = [
   body('specialization').isLength({min:3}).withMessage('Invalid birth_date'),
   body('hire_date').isDate().withMessage('Invalid hire date'),
   body('qualification').isLength({min:3}).withMessage('Invalid qualification'),
-  body('password').isLength({ min:8 }).withMessage('Password must be at least 6 chars')
+  body('password').isLength({ min:8 }).withMessage('Password must be at least 8 chars')
 ];

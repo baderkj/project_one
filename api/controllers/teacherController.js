@@ -1,8 +1,9 @@
 const teacherService = require('../services/teacherService');
 const userService = require('../services/userService');
-const { body, validationResult } = require('express-validator');
+const {  validationResult } = require('express-validator');
 
 const bcrypt=require('bcrypt-nodejs');
+const { getSubject } = require('./subjectController');
 module.exports = {
   async createTeacher(req, res) {
     try {
@@ -74,5 +75,14 @@ module.exports = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
+  async getSubjects(req, res) {
+    try {
+      const teacher = await teacherService.getSubjects(req.body.id);
+      if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
+      res.json(teacher);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };

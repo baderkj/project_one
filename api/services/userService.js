@@ -1,5 +1,5 @@
 const User = require('../models/User');
-
+const axios=require('axios');
 module.exports = {
   async createUser(userData) {
     return await User.create(userData);
@@ -9,6 +9,20 @@ module.exports = {
     return await User.findById(id);
   },
 
+  async sendMessage(to, body) {
+  console.log(process.env.ULTRA_MSG_API_URL)
+  try {
+    const response = await axios.post(process.env.ULTRA_MSG_API_URL, {
+      token: process.env.ULTRA_MSG_TOKEN,
+      to: to,
+      body: body
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending message:', error.response?.data || error.message);
+    throw error;
+  }
+},
   async getAllUsers() {
     return await User.findAll();
   },

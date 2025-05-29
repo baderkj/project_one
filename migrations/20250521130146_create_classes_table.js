@@ -3,11 +3,11 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-    return knex.schema.createTable('masters', function(table) {
+    return knex.schema.createTable('classes', function(table) {
         table.increments('id').primary();
-        table.string('password').notNullable();
-        table.string('email').unique().notNullable();
-        table.foreign('user_id').references('users.id');
+        table.string('class_name').notNullable();
+        table.integer('floor_number').notNullable();
+        
         table.timestamps(true, true); // created_at and updated_at
       });
 };
@@ -17,5 +17,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema.dropTable('masters');
+    return knex.schema.dropTable('classes');
 };

@@ -3,6 +3,9 @@ const app = express();
 const apiRouter = require('./api');
 const bodyparser=require('body-parser');
 const cors=require('cors');
+const userService = require('./api/services/userService');
+
+require('dotenv').config();
 // Middleware
 app.use(express.json());
 
@@ -11,6 +14,10 @@ app.use(bodyparser.json());
 
 //Cores protection
 app.use(cors());
+
+
+ 
+// userService.sendMessage('+963948576512','baders');
 
 // API routes
 app.use('/api', apiRouter);

@@ -1,6 +1,6 @@
 const {db} = require('../../config/db');
 
-class User {
+class Teacher {
   static async create(teacherData) {
     return await db('teachers').insert(teacherData).returning('*');
   }
@@ -20,6 +20,11 @@ class User {
   static async delete(id) {
     return await db('teachers').where({ id }).del();
   }
+  static async getSubjects(id) {
+    return await db('subjects as su')
+    .where('su.teacher_id', id)  // Changed from where({id:id}) to be more explicit
+    .select('su.*');
+  }
 }
 
-module.exports = User;
+module.exports = Teacher;

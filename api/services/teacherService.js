@@ -1,4 +1,5 @@
 const Teacher = require('../models/Teacher');
+const { getSubject } = require('./subjectService');
 
 module.exports = {
   async createTeacher(teacherData) {
@@ -19,5 +20,8 @@ module.exports = {
 
   async deleteTeacher(id) {
     return await Teacher.delete(id);
+  },
+  async getSubjects(id) {
+    return await Teacher.getSubjects(id);
   }
 };
