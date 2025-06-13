@@ -5,35 +5,47 @@ const {  validationResult } = require('express-validator');
 const bcrypt=require('bcrypt-nodejs');
 module.exports = {
   async createStudent(req, res) {
-    try {
-
-      const errors = validationResult(req);
-    if (!errors.isEmpty())
-    {
-        return res.status(400).json({ errors: errors.array() });
-    }  
-    const {name,email,password,phone,birth_date,class_id,curriculum_id,grade_level}=req.body;
-    const hash= bcrypt.hashSync(password);
-    const user=await userService.createUser({
-            name:name,
-            birth_date:birth_date,
-            email:email,
-            phone:phone,
-            role:'student',
-            password_hash:hash
-          });
-          
-          
-      const Student = await studentService.createStudent({
-        user_id:user[0].id,
-        class_id :class_id,
-        curriculum_id:curriculum_id,
-        grade_level:grade_level,
-      });
+    const { db } = require('../../config/db');
     
-      res.status(201).json(Student);
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }  
+      
+      const { name, email, password, phone, birth_date, class_id, curriculum_id, grade_level } = req.body;
+      const hash = bcrypt.hashSync(password);
+      
+      // Using transaction
+      const result = await db.transaction(async (trx) => {
+        // Create user within transaction
+        const user = await userService.createUser({
+          name: name,
+          birth_date: birth_date,
+          email: email,
+          phone: phone,
+          role: 'student',
+          password_hash: hash
+        }, trx);
+        
+        // Create student within the same transaction
+        const student = await studentService.createStudent({
+          user_id: user[0].id,
+          class_id: class_id,
+          curriculum_id: curriculum_id,
+          grade_level: grade_level,
+        }, trx);
+        
+        return student;
+      });
+      
+      res.status(201).json(result);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      console.error('Transaction error:', error);
+      res.status(400).json({ 
+        error: error.message,
+        msg: 'Failed to create student. All changes rolled back.'
+      });
     }
   },
 

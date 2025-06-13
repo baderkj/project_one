@@ -4,7 +4,7 @@ const pool = new Pool({ user: 'postgres', password: 'bader1234', database: 'scho
 function checkRoles(allowedRoles) {
     return async (req, res, next) => {
         const user = await pool.query('SELECT role FROM users WHERE id = $1', [req.userId]);
-        console.log(user,allowedRoles);
+        
       try {
        
         if (!allowedRoles.includes(user.rows[0].role)) {

@@ -7,7 +7,7 @@ const { getSubject } = require('./subjectController');
 module.exports = {
   async createTeacher(req, res) {
     try {
-
+      const { db } = require('../../config/db');
       const errors = validationResult(req);
     if (!errors.isEmpty())
     {
@@ -15,26 +15,38 @@ module.exports = {
     }  
     const {name,email,password,phone,birth_date,specialization,hire_date,qualification}=req.body;
     const hash= bcrypt.hashSync(password);
-    const user=await userService.createUser({
-            name:name,
-            birth_date:birth_date,
-            email:email,
-            phone:phone,
-            role:'teacher',
-            password_hash:hash
-          });
-          
-  
+
+    const result = await db.transaction(async (trx) => {
+      // Create user within transaction
+      const user = await userService.createUser({
+        name:name,
+        birth_date:birth_date,
+        email:email,
+        phone:phone,
+        role:'teacher',
+        password_hash:hash
+      }, trx);
+      
+      // Create student within the same transaction
       const Teacher = await teacherService.createTeacher({
         user_id:user[0].id,
         specialization:specialization,
         hire_date:hire_date,
         qualification:qualification,
-      });
+      },trx);
+      
+      return Teacher;
+    });
+ 
+          
+  
     
-      res.status(201).json(Teacher);
+    
+      res.status(201).json(result);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message ,
+         msg: 'Failed to create student. All changes rolled back.'
+      });
     }
   },
 

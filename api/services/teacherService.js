@@ -2,8 +2,8 @@ const Teacher = require('../models/Teacher');
 const { getSubject } = require('./subjectService');
 
 module.exports = {
-  async createTeacher(teacherData) {
-    return await Teacher.create(teacherData);
+  async createTeacher(teacherData,trx=null) {
+    return await Teacher.create(teacherData,trx);
   },
 
   async getTeacher(id) {

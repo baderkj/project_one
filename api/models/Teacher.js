@@ -1,10 +1,13 @@
 const {db} = require('../../config/db');
 
 class Teacher {
-  static async create(teacherData) {
-    return await db('teachers').insert(teacherData).returning('*');
-  }
 
+  static async create(teacherData, trx = null) {
+    const query = db('teachers');
+    if (trx) query.transacting(trx);
+    return await query.insert(teacherData).returning('*');
+  }
+  
   static async findById(id) {
     return await db('teachers').where({ id }).first();
   }

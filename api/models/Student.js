@@ -1,9 +1,12 @@
 const {db} = require('../../config/db');
 
 class Student {
-  static async create(studentData) {
-    return await db('students').insert(studentData).returning('*');
+  static async create(studentData, trx = null) {
+    const query = db('students');
+    if (trx) query.transacting(trx);
+    return await query.insert(studentData).returning('*');
   }
+  
 
   static async findById(id) {
     return await db('students').where({ id }).first();

@@ -4,7 +4,8 @@ require('dotenv').config();
 
 
 const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+  // const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+  const token = req.headers.token;
   
   if (!token) {
     return res.status(401).send('Access denied. No token provided.');

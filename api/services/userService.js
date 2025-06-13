@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const axios=require('axios');
 module.exports = {
-  async createUser(userData) {
-    return await User.create(userData);
+  async createUser(userData, trx = null) {
+    return await User.create(userData, trx);
   },
 
   async getUser(id) {

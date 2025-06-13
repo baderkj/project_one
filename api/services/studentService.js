@@ -2,10 +2,10 @@ const Student = require('../models/Student');
 const { getSubject } = require('./subjectService');
 
 module.exports = {
-  async createStudent(studentData) {
-    return await Student.create(studentData);
+  async createStudent(studentData, trx = null) {
+    return await Student.create(studentData, trx);
   },
-
+  
   async getStudent(id) {
     return await Student.findById(id);
   },

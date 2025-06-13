@@ -1,8 +1,10 @@
 const {db} = require('../../config/db');
 
 class User {
-  static async create(userData) {
-    return await db('users').insert(userData).returning('*');
+  static async create(userData, trx = null) {
+    const query = db('users');
+    if (trx) query.transacting(trx);
+    return await query.insert(userData).returning('*');
   }
 
   static async findById(id) {
