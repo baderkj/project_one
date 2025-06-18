@@ -54,6 +54,30 @@ module.exports = {
         }
     },
 
+    async getClasses(req, res) {
+        try {
+            const schedule = await scheduleService.getSchedule(req.body.id);
+            if (!schedule) return res.status(404).json({ error: 'Schedule Not found' })
+            const Class = await scheduleService.getClasses(req.body.id);
+            if (!Class) return res.status(404).json({ error: 'Class not found' });
+            res.json(Class);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    },
+
+    async getSubjects(req, res) {
+        try {
+            const schedule = await scheduleService.getSchedule(req.body.id);
+            if (!schedule) return res.status(404).json({ error: 'Schedule Not found' })
+            const Subject = await scheduleService.getSubjects(req.body.id);
+            if (!Subject) return res.status(404).json({ error: 'Subject not found' });
+            res.json(Subject);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    },
+
     async getPeriods(req, res) {
         try {
             const schedule = await scheduleService.getSchedule(req.body.id);

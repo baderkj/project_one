@@ -21,6 +21,14 @@ module.exports = {
     return await Schedule.delete(id);
   },
 
+  async getClasses(id) {
+    return await Schedule.getClasses(id);
+  },
+
+  async getSubjects(id) {
+    return await Schedule.getSubjects(id);
+  },
+
   async getPeriods(id) {
     return await Schedule.getPeriods(id);
   },
