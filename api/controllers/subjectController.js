@@ -41,7 +41,7 @@ module.exports = {
   async updateSubject(req, res) {
     try {
       const Subject = await subjectService.updateSubject(req.params.id, req.body);
-      if (!Subject) return res.status(404).json({ error: 'Subject not found' });
+      if (!Subject||Subject.length==0) return res.status(404).json({ error: 'Subject not found' });
       res.json(Subject);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -52,7 +52,7 @@ module.exports = {
     try {
       const result = await subjectService.deleteSubject(req.params.id);
       if (!result) return res.status(404).json({ error: 'Subject not found' });
-      res.status(204).end();
+      res.status(200).json({message:'deleted successfuly'});
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

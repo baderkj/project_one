@@ -13,3 +13,5 @@ router.get('/days', scheduleController.getDays);
 router.get('/:id', scheduleController.getSchedule);
 router.put('/:id', scheduleController.updateSchedule);
 router.delete('/:id', scheduleController.deleteSchedule);
+
+module.exports=router;

@@ -5,6 +5,8 @@ const bodyparser=require('body-parser');
 const cors=require('cors');
 const userService = require('./api/services/userService');
 
+// Firebase SDK
+const admin = require('./firebase/firebase-admin.js');
 require('dotenv').config();
 // Middleware
 app.use(express.json());
@@ -15,8 +17,18 @@ app.use(bodyparser.json());
 //Cores protection
 app.use(cors());
 
+const message = {
+  notification: {
+    title: 'ttil',
+    body: 'go here'
+  },
+  token: 'd0r5wGPBlRgHcD1bQgfiAs:APA91bFxZVyc3Eu_6goXYupeMTz4KXvvoMlDj6RJA5-wkXJq7U6joQW0rSKzLRWwDdyklEBeJoOCuh3-Xn7SDty8UdmmMgwYSjyYoPtMu6feiTyKLaBRtes'
+};
+async function ll (){
+  const response = await admin.messaging().send(message);
+}
 
- 
+
 // userService.sendMessage('+963948576512','baders');
 
 // API routes

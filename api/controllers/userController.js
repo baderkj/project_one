@@ -3,6 +3,7 @@ const {  validationResult } = require('express-validator');
 const bcrypt=require('bcrypt-nodejs');
 const {db}=require('../../config/db');
 const jwt = require('jsonwebtoken');
+const { messaging } = require('firebase-admin');
 require('dotenv');
 module.exports = {
   async signIn(req, res) {
@@ -96,7 +97,7 @@ module.exports = {
   async updateUser(req, res) {
     try {
       const user = await userService.updateUser(req.params.id, req.body);
-      if (!user) return res.status(404).json({ error: 'User not found' });
+      if (!user||user.length==0) return res.status(404).json({ error: 'User not found' });
       res.json(user);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -107,7 +108,7 @@ module.exports = {
     try {
       const result = await userService.deleteUser(req.params.id);
       if (!result) return res.status(404).json({ error: 'User not found' });
-      res.status(204).end();
+      res.status(200).json({message:'deleted successfuly'});
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

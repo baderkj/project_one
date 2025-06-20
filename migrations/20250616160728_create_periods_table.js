@@ -5,9 +5,9 @@
 exports.up = function (knex) {
     return knex.schema.createTable('periods', function (table) {
         table.increments('id').primary();
-        table.date('start_time').notNullable();
-        table.date('end_time').notNullable();
-        table.timestamp(true, true);
+        table.time('start_time').notNullable();
+        table.time('end_time').notNullable();
+  
     });
 };
 

@@ -27,4 +27,7 @@ module.exports = {
   async getClass(id) {
     return await Student.getClass(id);
   },
+  async getStudentArchive(id) {
+    return await Student.getStudentArchive(id);
+  },
 };

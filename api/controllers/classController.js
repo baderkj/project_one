@@ -41,7 +41,7 @@ module.exports = {
   async updateClass(req, res) {
     try {
       const Class = await classService.updateClass(req.params.id, req.body);
-      if (!Class) return res.status(404).json({ error: 'Class not found' });
+      if (!Class||Class.length==0) return res.status(404).json({ error: 'Class not found' });
       res.json(Class);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -52,7 +52,7 @@ module.exports = {
     try {
       const result = await classService.deleteClass(req.params.id);
       if (!result) return res.status(404).json({ error: 'Class not found' });
-      res.status(204).end();
+      res.status(200).json({message:'deleted successfuly'});
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

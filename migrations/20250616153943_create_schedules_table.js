@@ -15,6 +15,9 @@ exports.up = function (knex) {
     table.foreign('day_id').references('days.id').onDelete('CASCADE');
     table.foreign('period_id').references('periods.id').onDelete('CASCADE');
     table.timestamps(true, true); // created_at and updated_at
+
+    table.unique(['subject_id', 'day_id', 'period_id']);
+    table.unique(['class_id', 'day_id', 'period_id']);
   });
 };
 

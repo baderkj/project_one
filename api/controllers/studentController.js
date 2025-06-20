@@ -71,7 +71,7 @@ module.exports = {
   async updateStudent(req, res) {
     try {
       const student = await studentService.updateStudent(req.params.id, req.body);
-      if (!student) return res.status(404).json({ error: 'Student not found' });
+      if (!student||student.length==0) return res.status(404).json({ error: 'Student not found' });
       res.json(student);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -82,7 +82,7 @@ module.exports = {
     try {
       const result = await studentService.deleteStudent(req.params.id);
       if (!result) return res.status(404).json({ error: 'Student not found' });
-      res.status(204).end();
+      res.status(200).json({message:'deleted successfuly'});
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -109,4 +109,16 @@ module.exports = {
       res.status(400).json({ error: error.message });
     }
   },
+  async getStudentArchive(req, res) {
+    try {
+      const studentExists = await studentService.getStudent(req.body.id);
+      if (!studentExists) return res.status(404).json({ error: 'student not found' });
+      const archive = await studentService.getStudentArchive(req.body.id);
+      if (!archive) return res.status(404).json({ error: 'archive not found' });
+      res.json(archive);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
 };

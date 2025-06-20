@@ -9,3 +9,5 @@ router.get('/', periodController.getAllPeriods);
 router.get('/:id', periodController.getPeriod);
 router.put('/:id', periodController.updatePeriod);
 router.delete('/:id', periodController.deletePeriod);
+
+module.exports=router;

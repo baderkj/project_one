@@ -72,7 +72,7 @@ module.exports = {
   async updateTeacher(req, res) {
     try {
       const teacher = await teacherService.updateTeacher(req.params.id, req.body);
-      if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
+      if (!teacher||teacher.length==0) return res.status(404).json({ error: 'Teacher not found' });
       res.json(teacher);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -83,7 +83,7 @@ module.exports = {
     try {
       const result = await teacherService.deleteTeacher(req.params.id);
       if (!result) return res.status(404).json({ error: 'Teacher not found' });
-      res.status(204).end();
+      res.status(200).json({message:'deleted successfuly'});
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
