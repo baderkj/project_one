@@ -5,7 +5,7 @@
 .env.local
 .env.development
 .env.production
-
+firebase/*.json
 # Dependencies
 node_modules/
 
