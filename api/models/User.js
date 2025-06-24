@@ -22,6 +22,38 @@ class User {
   static async delete(id) {
     return await db('users').where({ id }).del();
   }
+
+  static async search(name) {
+    return await db('users').where('name', 'like', `%${name}%`).select('*');
+  }
+
+  static async paginate({
+    table,
+    page = 1,
+    pageSize = 10,
+    orderBy = 'id',
+    orderDirection = 'asc'
+  }) {
+
+    const columns = await db(table).columnInfo();
+    const filteredColumns= Object.keys(columns).filter(col => col !== 'password_hash');
+    return await db(table)
+    .select(filteredColumns)
+    .orderBy(orderBy, orderDirection)
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
+    
+  }
+
+  static async count({
+    table 
+  }) {
+    return await db(table)
+    .count('* as total')
+   
+  }
+
+
 }
 
 module.exports = User;

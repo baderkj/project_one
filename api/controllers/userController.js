@@ -112,6 +112,23 @@ module.exports = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
   
+  async search(req, res) {
+    try {
+      const users = await userService.search(req.params.name);
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async paginate(req, res) {
+    try {
+      const users = await userService.paginate(req.body);
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
