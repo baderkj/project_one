@@ -10,6 +10,7 @@ router.get('/', studentController.getAllStudents);
 router.get('/subjects', studentController.getStudentSubjects);
 router.get('/class', studentController.getClass);
 router.get('/archive', studentController.getStudentArchive);
+router.get('/schedule', studentController.getStudentSchedule);
 router.get('/:id', studentController.getStudent);
 
 router.put('/:id', studentController.updateStudent);

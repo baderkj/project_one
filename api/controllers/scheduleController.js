@@ -1,5 +1,6 @@
 const scheduleService = require('../services/scheduleService');
 const { validationResult } = require('express-validator');
+const studentService = require('../services/studentService');
 
 module.exports = {
     async createSchedule(req, res) {
@@ -54,51 +55,6 @@ module.exports = {
         }
     },
 
-    async getClasses(req, res) {
-        try {
-            const schedule = await scheduleService.getSchedule(req.body.id);
-            if (!schedule) return res.status(404).json({ error: 'Schedule Not found' })
-            const Class = await scheduleService.getClasses(req.body.id);
-            if (!Class) return res.status(404).json({ error: 'Class not found' });
-            res.json(Class);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    },
 
-    async getSubjects(req, res) {
-        try {
-            const schedule = await scheduleService.getSchedule(req.body.id);
-            if (!schedule) return res.status(404).json({ error: 'Schedule Not found' })
-            const Subject = await scheduleService.getSubjects(req.body.id);
-            if (!Subject) return res.status(404).json({ error: 'Subject not found' });
-            res.json(Subject);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    },
-
-    async getPeriods(req, res) {
-        try {
-            const schedule = await scheduleService.getSchedule(req.body.id);
-            if (!schedule) return res.status(404).json({ error: 'Schedule Not found' })
-            const Period = await scheduleService.getPeriods(req.body.id);
-            if (!Period) return res.status(404).json({ error: 'Period not found' });
-            res.json(Period);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    },
-
-    async getDays(req, res) {
-        try {
-            const schedule = await scheduleService.getSchedule(req.body.id);
-            if (!schedule) return res.status(404).json({ error: 'Schedule Not found' })
-            const Day = await scheduleService.getDays(req.body.id);
-            if (!Day) return res.status(404).json({ error: 'Day not found' });
-            res.json(Day);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    }
+    
 };

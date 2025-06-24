@@ -41,6 +41,15 @@ class Student {
     .where('s.id', id)  // Changed from where({id:id}) to be more explicit
     .select('s.*','a.*');
   }
+  static async getStudentSchedule(id) {
+    return await db('schedules as sc')
+    .join('students as st', 'st.class_id', 'sc.class_id')
+    .join('days as d', 'd.id', 'sc.day_id')
+    .join('periods as p', 'p.id', 'sc.period_id')
+    .join('subjects as su', 'su.id', 'sc.subject_id')
+    .where('st.id', id)  // Changed from where({id:id}) to be more explicit
+    .select('p.*','d.*','su.name as subject_name');
+  }
 }
 
 module.exports = Student;

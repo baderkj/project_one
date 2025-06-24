@@ -22,12 +22,13 @@ const message = {
     title: 'ttil',
     body: 'go here'
   },
-  token: 'd0r5wGPBlRgHcD1bQgfiAs:APA91bFxZVyc3Eu_6goXYupeMTz4KXvvoMlDj6RJA5-wkXJq7U6joQW0rSKzLRWwDdyklEBeJoOCuh3-Xn7SDty8UdmmMgwYSjyYoPtMu6feiTyKLaBRtes'
+  token: 'fXGW_K3eUHy0Uzxcal5hDE:APA91bEpouIwNloMF71qh5mGYeHDhWmJ9tMNg-nNA3oC-7axbyd7QLkx0pTIsj5W0VynSW6zLCh883Mj2ljPSP5GL0KDHKi-OGPm2NQxQxp39J3-gWBLxO8'
 };
 async function ll (){
   const response = await admin.messaging().send(message);
+  console.log(response);
 }
-
+ll();
 
 // userService.sendMessage('+963948576512','baders');
 
