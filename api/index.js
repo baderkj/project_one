@@ -13,6 +13,7 @@ const archiveRoutes = require('./routes/archiveRoutes');
 const dayRoutes = require('./routes/dayRoutes');
 const periodRoutes = require('./routes/periodRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const roleRoutes = require('./routes/roleRoutes');
 // const productRoutes = require('./routes/productRoutes');
 
 // Mount routes
@@ -27,6 +28,6 @@ router.use('/archives', archiveRoutes);
 router.use('/days', dayRoutes);
 router.use('/periods', periodRoutes);
 router.use('/schedules', scheduleRoutes);
-
+router.use('/roles', roleRoutes);
 
 module.exports = router;

@@ -3,11 +3,40 @@ const router = express.Router();
 const periodController = require('../controllers/periodController');
 //const {checkRoles}=require('../../middleware/roleMiddleware');
 //const authMiddleware=require('../../middleware/authMiddleware');
-const{periodValidator}=require('../validators/periodValidator');
-router.post('/', periodValidator,periodController.createPeriod);
-router.get('/', periodController.getAllPeriods);
-router.get('/:id', periodController.getPeriod);
-router.put('/:id', periodController.updatePeriod);
-router.delete('/:id', periodController.deletePeriod);
+const { periodValidator } = require('../validators/periodValidator');
+const authMiddleware = require('../../middleware/authMiddleware');
+const hasPermission = require('../../middleware/hasPermission');
 
-module.exports=router;
+router.post(
+  '/',
+  periodValidator,
+  authMiddleware,
+  hasPermission('create_period'),
+  periodController.createPeriod
+);
+router.get(
+  '/',
+  authMiddleware,
+  hasPermission('get_all_periods'),
+  periodController.getAllPeriods
+);
+router.get(
+  '/:id',
+  authMiddleware,
+  hasPermission('get_period'),
+  periodController.getPeriod
+);
+router.put(
+  '/:id',
+  authMiddleware,
+  hasPermission('update_period'),
+  periodController.updatePeriod
+);
+router.delete(
+  '/:id',
+  authMiddleware,
+  hasPermission('delete_period'),
+  periodController.deletePeriod
+);
+
+module.exports = router;

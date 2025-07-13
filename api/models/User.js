@@ -1,4 +1,4 @@
-const {db} = require('../../config/db');
+const { db } = require('../../config/db');
 
 class User {
   static async create(userData, trx = null) {
@@ -12,7 +12,7 @@ class User {
   }
 
   static async findAll() {
-    return await db('users').select('*') ;
+    return await db('users').select('*');
   }
 
   static async update(id, updates) {
@@ -21,6 +21,14 @@ class User {
 
   static async delete(id) {
     return await db('users').where({ id }).del();
+  }
+
+  static async findWithRole(id) {
+    return db('users')
+      .join('roles', 'users.role_id', 'roles.id')
+      .select('users.*', 'roles.name as role')
+      .where('users.id', id)
+      .first();
   }
 }
 
