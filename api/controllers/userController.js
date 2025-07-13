@@ -123,4 +123,26 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+<<<<<<< HEAD
 };
+=======
+  
+  async search(req, res) {
+    try {
+      const users = await userService.search(req.params.name);
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async paginate(req, res) {
+    try {
+      const users = await userService.paginate(req.body);
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+};
+>>>>>>> ed7006f460fc443032659759ef1532a35edcf456

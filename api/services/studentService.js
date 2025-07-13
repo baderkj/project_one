@@ -30,4 +30,7 @@ module.exports = {
   async getStudentArchive(id) {
     return await Student.getStudentArchive(id);
   },
+  async getStudentSchedule(id) {
+    return await Student.getStudentSchedule(id);
+  },
 };

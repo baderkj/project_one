@@ -6,6 +6,7 @@ const authMiddleware = require('../../middleware/authMiddleware');
 const { studentValidator } = require('../validators/studentValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
+<<<<<<< HEAD
 router.post(
   '/',
   studentValidator,
@@ -43,6 +44,18 @@ router.get(
   hasPermission('get_student'),
   studentController.getStudent
 );
+=======
+router.post('/', studentValidator,authMiddleware,checkRoles(['admin']),studentController.createStudent);
+router.get('/', studentController.getAllStudents);
+router.get('/subjects', studentController.getStudentSubjects);
+router.get('/class', studentController.getClass);
+router.get('/archive', studentController.getStudentArchive);
+router.get('/schedule', studentController.getStudentSchedule);
+router.get('/:id', studentController.getStudent);
+
+router.put('/:id', studentController.updateStudent);
+router.delete('/:id', studentController.deleteStudent);
+>>>>>>> ed7006f460fc443032659759ef1532a35edcf456
 
 router.put(
   '/:id',

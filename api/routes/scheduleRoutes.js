@@ -3,9 +3,20 @@ const router = express.Router();
 const scheduleController = require('../controllers/scheduleController');
 //const {checkRoles}=require('../../middleware/roleMiddleware');
 //const authMiddleware=require('../../middleware/authMiddleware');
+<<<<<<< HEAD
 const { scheduleValidator } = require('../validators/scheduleValidator');
 const hasPermission = require('../../middleware/hasPermission');
 const authMiddleware = require('../../middleware/authMiddleware');
+=======
+const{scheduleValidator}=require('../validators/scheduleValidator');
+router.post('/', scheduleValidator,scheduleController.createSchedule);
+router.get('/', scheduleController.getAllSchedules);
+
+
+router.get('/:id', scheduleController.getSchedule);
+router.put('/:id', scheduleController.updateSchedule);
+router.delete('/:id', scheduleController.deleteSchedule);
+>>>>>>> ed7006f460fc443032659759ef1532a35edcf456
 
 router.post(
   '/',

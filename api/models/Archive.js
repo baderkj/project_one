@@ -21,12 +21,7 @@ class Archive {
     return await db('archives').where({ id }).del();
   }
 
-  static async getStudentArchive(id) {
-    return await db('archives as c')
-    .join('students as s', 's.id', 'a.student_id')
-    .where('s.id', id)  // Changed from where({id:id}) to be more explicit
-    .select('s.*','a.*');
-  }
+ 
 }
 
 module.exports = Archive;

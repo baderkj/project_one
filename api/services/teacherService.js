@@ -1,5 +1,5 @@
 const Teacher = require('../models/Teacher');
-const { getSubject } = require('./subjectService');
+
 
 module.exports = {
   async createTeacher(teacherData,trx=null) {
@@ -23,5 +23,8 @@ module.exports = {
   },
   async getSubjects(id) {
     return await Teacher.getSubjects(id);
+  },
+  async getTeacherSchedule(id) {
+    return await Teacher.getTeacherSchedule(id);
   }
 };

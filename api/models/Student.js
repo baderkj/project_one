@@ -41,6 +41,37 @@ class Student {
     .where('s.id', id)  // Changed from where({id:id}) to be more explicit
     .select('s.*','a.*');
   }
+  static async getStudentSchedule(id) {
+    const scheduleEntries = await db('schedules as sc')
+      .join('students as st', 'st.class_id', 'sc.class_id')
+      .join('days as d', 'd.id', 'sc.day_id')
+      .join('periods as p', 'p.id', 'sc.period_id')
+      .join('subjects as su', 'su.id', 'sc.subject_id')
+      .where('st.id', id)
+      .select('p.*', 'd.*','d.name as day_name', 'su.name as subject_name');
+    
+    // Group by day
+    const scheduleByDay = {};
+    scheduleEntries.forEach(entry => {
+      if (!scheduleByDay[entry.day_name]) {
+        scheduleByDay[entry.day_name] = {
+          day_id: entry.day_id,
+          day_name: entry.day_name,
+          subjects: []
+        };
+      }
+      
+      scheduleByDay[entry.day_name].subjects.push({
+        period_id: entry.id,
+        start_time: entry.start_time,
+        end_time: entry.end_time,
+        subject_name: entry.subject_name
+      });
+    });
+    
+    // Convert to array format if preferred
+    return Object.values(scheduleByDay);
+  }
 }
 
 module.exports = Student;

@@ -113,4 +113,19 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+<<<<<<< HEAD
 };
+=======
+  async getTeacherSchedule(req, res) {
+    try {
+      const teacher = await teacherService.getTeacher(req.body.id);
+      if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
+      const schedule = await teacherService.getTeacherSchedule(req.body.id);
+      if (!schedule) return res.status(404).json({ error: 'Schedule not found' });
+      res.json(schedule);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+};
+>>>>>>> ed7006f460fc443032659759ef1532a35edcf456
