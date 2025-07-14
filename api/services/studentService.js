@@ -10,6 +10,9 @@ module.exports = {
     return await Student.findById(id);
   },
 
+  async findByEmail(email,trx=null) {
+    return await Student.findByEmail(email,trx);
+  },
   async getAllStudents() {
     return await Student.findAll();
   },
