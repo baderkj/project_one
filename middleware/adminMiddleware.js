@@ -1,6 +1,6 @@
 
 const {Pool}=require('pg');
-const pool = new Pool({ user: 'postgres', password: 'bader1234', database: 'smart_brain' });
+const pool = new Pool({ user: 'postgres', password: 'bader1234', database: 'school_db_2' });
 
 const adminMiddleware = async (req, res, next) => {
     const user = await pool.query('SELECT role FROM users WHERE id = $1', [req.userId]);
