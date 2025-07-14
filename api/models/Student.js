@@ -12,10 +12,10 @@ class Student {
     return await db('students').where({ id }).first();
   }
 
-  static async findByEmail(email) {
-   const user= await db('users').where({email}).first();
-    return await db('students').where({ user_id:user.id }).first();
-  }
+  // static async findByEmail(email) {
+  //  const user= await db('users').where({email}).first();
+  //   return await db('students').where({ user_id:user.id }).first();
+  // }
   async findByEmail(email, trx = null) {
     const user= await db('users').where({email}).first();
     const query =  db('students').where({ user_id:user.id }).first();
@@ -52,7 +52,8 @@ class Student {
     .select('s.*','a.*');
   }
   static async getStudentSchedule(id) {
-     const scheduleEntries = await db('schedules as sc')
+
+    const scheduleEntries = await db('schedules as sc')
       .join('students as st', 'st.class_id', 'sc.class_id')
       .join('days as d', 'd.id', 'sc.day_id')
       .join('periods as p', 'p.id', 'sc.period_id')
@@ -61,6 +62,9 @@ class Student {
       .select('p.id as period_id', 'p.start_time', 'p.end_time', 'd.id as day_id', 'd.name as day_name', 'su.name as subject_name')
       .orderBy('d.id', 'asc') // Ensure days are ordered
       .orderBy('p.id', 'asc'); 
+      
+    
+
     // Group by day
     const scheduleByDay = {};
     scheduleEntries.forEach(entry => {

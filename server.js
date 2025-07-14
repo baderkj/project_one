@@ -20,17 +20,21 @@ app.use(cors());
 const message = {
   notification: {
     title: 'ttil',
+
     body: 'abd nigga'
   },
   token: 'c5oIOoKKy3XSyvuN2VFk6M:APA91bFkJzGWdIjoeJItq2prFtZbSeKrQGJ7XNsLYx6RVyPpuuVwBzH1DAPFuC9Et9iIZFOHupUx4YSKdYkkLCvxGopUfLkGetjKolHB5g5zrRlDtw-nOWQ'
   
   // token: 'fXGW_K3eUHy0Uzxcal5hDE:APA91bEpouIwNloMF71qh5mGYeHDhWmJ9tMNg-nNA3oC-7axbyd7QLkx0pTIsj5W0VynSW6zLCh883Mj2ljPSP5GL0KDHKi-OGPm2NQxQxp39J3-gWBLxO8'
+
 };
 async function ll (){
   const response = await admin.messaging().send(message);
   console.log(response);
 }
+
 // ll();
+
 
 // userService.sendMessage('+963948576512','usdsdfs');
 
