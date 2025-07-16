@@ -3,9 +3,11 @@ const router = express.Router();
 const roleController = require('../controllers/roleController');
 const authMiddleware = require('../../middleware/authMiddleware');
 const hasPermission = require('../../middleware/hasPermission');
+const { roleValidator } = require('../validators/roleValidator');
 
 router.post(
   '/',
+  roleValidator,
   authMiddleware,
   hasPermission('create_role'),
   roleController.createRole
@@ -26,9 +28,15 @@ router.put(
 router.get(
   '/:roleId/permissions',
   authMiddleware,
-
   hasPermission('show_role_permissions'),
   roleController.getRolePermissions
+);
+
+router.delete(
+  '/:roleId',
+  authMiddleware,
+  hasPermission('delete_role'),
+  roleController.deleteRole
 );
 
 module.exports = router;

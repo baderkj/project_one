@@ -16,6 +16,10 @@ class Role {
   static async getRoleById({ id }) {
     return await db('roles').where({ id }).select('id');
   }
+
+  static async delete(id) {
+    return await db('roles').where({ id }).del();
+  }
 }
 
 module.exports = Role;

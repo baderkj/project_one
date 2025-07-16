@@ -9,7 +9,19 @@ module.exports = {
       const exists = await roleService.gerRoleByName(name);
 
       if (!exists[0]) {
+        const permissionsFromDB = await db('permissions').select('id');
+        const Ids = permissionsFromDB.map((id) => id.id);
+
+        const allValid = permissions.every((permission) =>
+          Ids.includes(permission)
+        );
+        if (allValid === false) {
+          console.log('object');
+          return res.json({ error: 'invalid permissions' });
+        }
+
         const role = await roleService.createRole({ name });
+
         if (permissions.length > 0) {
           var permissionIds = await db('permissions')
             .whereIn('id', permissions)
@@ -86,7 +98,21 @@ module.exports = {
     try {
       const { roleId } = req.params;
       const permissions = await roleService.getPermissionsOfRole(roleId);
+
       res.status(200).json(permissions);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  async deleteRole(req, res) {
+    try {
+      const { roleId } = req.params;
+      const role = await roleService.deleteRole(roleId);
+
+      if (!role) return res.status(404).json({ error: 'Schedule not found' });
+
+      res.status(200).json({ message: 'deleted successfuly' });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

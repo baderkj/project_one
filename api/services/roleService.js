@@ -35,4 +35,8 @@ module.exports = {
   async gerRoleById({ id }) {
     return await Role.getRoleById({ id });
   },
+
+  async deleteRole(id) {
+    return await Role.delete(id);
+  },
 };

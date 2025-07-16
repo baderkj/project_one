@@ -23,6 +23,7 @@ exports.seed = async function (knex) {
     { name: 'show_all_roles' },
     { name: 'update_role' },
     { name: 'show_role_permissions' },
+    { name: 'delete_role' },
     // teacher
     { name: 'create_teacher' },
     { name: 'get_teachers' },
