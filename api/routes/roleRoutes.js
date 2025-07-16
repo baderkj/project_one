@@ -13,7 +13,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
-  hasPermission('show_roles'),
+  hasPermission('show_all_roles'),
   roleController.getAllRoles
 );
 

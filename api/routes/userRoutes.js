@@ -21,11 +21,36 @@ router.get(
   userController.getAllUsers
 );
 
-router.get('/search/:name', userController.search);
-router.get('/paginate', userController.paginate);
+router.get(
+  '/search/:name',
+  authMiddleware,
+  hasPermission('create_user'),
+  userController.search
+);
+router.get(
+  '/paginate',
+  authMiddleware,
+  hasPermission('create_user'),
+  userController.paginate
+);
 
-router.get('/:id', userController.getUser);
-router.put('/:id', hasPermission('update_user'), userController.updateUser);
-router.delete('/:id', hasPermission('delete_user'), userController.deleteUser);
+router.get(
+  '/:id',
+  authMiddleware,
+  hasPermission('get_user'),
+  userController.getUser
+);
+router.put(
+  '/:id',
+  authMiddleware,
+  hasPermission('update_user'),
+  userController.updateUser
+);
+router.delete(
+  '/:id',
+  authMiddleware,
+  hasPermission('delete_user'),
+  userController.deleteUser
+);
 
 module.exports = router;

@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const teacherController = require('../controllers/teacherController');
 const hasPermission = require('../../middleware/hasPermission');
-const authMiddleware=require('../../middleware/authMiddleware');
-const{teacherValidator}=require('../validators/teacherValidator');
-
-
+const authMiddleware = require('../../middleware/authMiddleware');
+const { teacherValidator } = require('../validators/teacherValidator');
 
 router.post(
   '/',
@@ -26,7 +24,12 @@ router.get(
   hasPermission('get_teacher_subjects'),
   teacherController.getSubjects
 );
-router.get('/:id', hasPermission('get_teacher'), teacherController.getTeacher);
+router.get(
+  '/:id',
+  authMiddleware,
+  hasPermission('get_teacher'),
+  teacherController.getTeacher
+);
 router.put(
   '/:id',
   authMiddleware,

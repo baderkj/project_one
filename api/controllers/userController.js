@@ -33,9 +33,7 @@ module.exports = {
       if (!isValid) {
         return res.status(400).json('Wrong credentials');
       }
-      console.log(user.role_id);
-      console.log(user.email);
-      console.log(user.id);
+
       // 3. Generate token (exclude sensitive data)
       const token = jwt.sign(
         {
@@ -118,12 +116,12 @@ module.exports = {
     try {
       const result = await userService.deleteUser(req.params.id);
       if (!result) return res.status(404).json({ error: 'User not found' });
-      res.status(200).json({message:'deleted successfuly'});
+      res.status(200).json({ message: 'deleted successfuly' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
-  
+
   async search(req, res) {
     try {
       const users = await userService.search(req.params.name);

@@ -44,7 +44,6 @@ module.exports = {
   async updatePermissions(req, res) {
     try {
       const { roleId, permissions } = req.body;
-
       const exists = await roleService.gerRoleById({ id: roleId });
 
       if (exists[0]) {
@@ -55,9 +54,7 @@ module.exports = {
 
           if (permissionIds.length > 0) {
             const pIds = permissionIds.map((id) => id.id);
-            console.log(pIds);
 
-            console.log(exists[0].id);
             const result = await roleService.updatePermissionsToRole(
               exists[0].id,
               pIds

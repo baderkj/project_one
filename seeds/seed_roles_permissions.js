@@ -14,12 +14,13 @@ exports.seed = async function (knex) {
   const permissionsList = [
     // user
     { name: 'create_user' },
+    { name: 'get_user' },
     { name: 'delete_user' },
     { name: 'show_users' },
     { name: 'update_user' },
     // role
     { name: 'create_role' },
-    { name: 'show_roles' },
+    { name: 'show_all_roles' },
     { name: 'update_role' },
     { name: 'show_role_permissions' },
     // teacher
@@ -97,6 +98,44 @@ exports.seed = async function (knex) {
     { name: 'get_academic_year' },
     { name: 'update_academic_year' },
     { name: 'delete_academic_year' },
+    // exam
+    { name: 'create_exam' },
+    { name: 'get_all_exam' },
+    { name: 'get_exam_questions' },
+    { name: 'get_exam' },
+    { name: 'update_exam' },
+    { name: 'delete_exam' },
+    // question
+    { name: 'create_question' },
+    { name: 'get_all_questions' },
+    { name: 'get_question' },
+    { name: 'update_question' },
+    { name: 'delete_question' },
+    // option
+    { name: 'create_option' },
+    { name: 'get_all_options' },
+    { name: 'get_option' },
+    { name: 'update_option' },
+    { name: 'delete_option' },
+    // exam question
+    { name: 'create_exam_question' },
+    { name: 'get_all_exam_questions' },
+    { name: 'get_exam_question' },
+    { name: 'update_exam_question' },
+    { name: 'delete_exam_question' },
+    // exam attempt
+    { name: 'create_exam_attempt' },
+    { name: 'get_all_exam_attempts' },
+    { name: 'grade_exam' },
+    { name: 'get_all_exam_attempt' },
+    { name: 'update_exam_attempt' },
+    { name: 'delete_exam_attempt' },
+    // answer
+    { name: 'create_answer' },
+    { name: 'get_all_answers' },
+    { name: 'get_answer' },
+    { name: 'update_answer' },
+    { name: 'delete_answer' },
   ];
 
   const permissions = await knex('permissions')

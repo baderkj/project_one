@@ -1,15 +1,42 @@
 const express = require('express');
 const router = express.Router();
 const answerController = require('../controllers/answerController');
-const {checkRoles}=require('../../middleware/roleMiddleware');
-const authMiddleware=require('../../middleware/authMiddleware');
-const{answerValidator}=require('../validators/answerValidator');
-router.post('/',answerValidator, answerController.createAnswer);
-router.get('/', answerController.getAllAnswers);
-router.get('/:id', answerController.getAnswer);
-router.put('/:id', answerController.updateAnswer);
-router.delete('/:id', answerController.deleteAnswer);
+const { checkRoles } = require('../../middleware/roleMiddleware');
+const authMiddleware = require('../../middleware/authMiddleware');
+const { answerValidator } = require('../validators/answerValidator');
+const hasPermission = require('../../middleware/hasPermission');
 
+router.post(
+  '/',
+  answerValidator,
+  authMiddleware,
+  hasPermission('create_answer'),
+  answerController.createAnswer
+);
+router.get(
+  '/',
+  authMiddleware,
+  hasPermission('get_all_answers'),
+  answerController.getAllAnswers
+);
+router.get(
+  '/:id',
+  authMiddleware,
+  hasPermission('get_answer'),
+  answerController.getAnswer
+);
+router.put(
+  '/:id',
+  authMiddleware,
+  hasPermission('update_answer'),
+  answerController.updateAnswer
+);
+router.delete(
+  '/:id',
+  authMiddleware,
+  hasPermission('delete_answer'),
+  answerController.deleteAnswer
+);
 
 //authMiddleware,checkRoles(['admin']),
 module.exports = router;
