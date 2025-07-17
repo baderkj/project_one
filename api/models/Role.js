@@ -14,7 +14,7 @@ class Role {
   }
 
   static async getRoleById({ id }) {
-    return await db('roles').where({ id }).select('id');
+    return await db('roles').where({ id }).select('*');
   }
 
   static async delete(id) {

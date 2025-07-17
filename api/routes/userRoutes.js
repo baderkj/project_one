@@ -24,13 +24,13 @@ router.get(
 router.get(
   '/search/:name',
   authMiddleware,
-  hasPermission('create_user'),
+  hasPermission('search_user'),
   userController.search
 );
 router.get(
   '/paginate',
   authMiddleware,
-  hasPermission('create_user'),
+  hasPermission('paginate_user'),
   userController.paginate
 );
 

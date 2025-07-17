@@ -32,7 +32,7 @@ module.exports = {
     return await Role.getRoleByName(name);
   },
 
-  async gerRoleById({ id }) {
+  async getRoleById({ id }) {
     return await Role.getRoleById({ id });
   },
 

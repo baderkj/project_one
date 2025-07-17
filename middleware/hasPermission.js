@@ -2,6 +2,7 @@ const { db } = require('../config/db');
 
 function hasPermission(permissionName) {
   return async (req, res, next) => {
+    console.log('object');
     try {
       const user = req.user;
       if (!user || !user.role_id)
