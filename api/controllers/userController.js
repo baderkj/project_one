@@ -125,7 +125,6 @@ module.exports = {
 
   async search(req, res) {
     try {
-      console.log('object');
       const users = await userService.search(req.params.name);
       res.json(users);
     } catch (error) {
