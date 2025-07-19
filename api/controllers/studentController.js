@@ -24,7 +24,6 @@ module.exports = {
           birth_date: birth_date,
           email: email,
           phone: phone,
-          role: 'student',
           password_hash: hash
         }, trx);
         

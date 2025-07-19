@@ -11,7 +11,6 @@ router.post(
   classValidator,
   authMiddleware,
   hasPermission('create_calss'),
-  checkRoles(['admin']),
   classController.createClass
 );
 router.get(
