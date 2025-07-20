@@ -56,7 +56,7 @@ module.exports = {
   async updatePermissions(req, res) {
     try {
       const { roleId, permissions } = req.body;
-      const exists = await roleService.gerRoleById({ id: roleId });
+      const exists = await roleService.getRoleById({ id: roleId });
 
       if (exists[0]) {
         if (permissions.length > 0) {
@@ -85,18 +85,12 @@ module.exports = {
     }
   },
 
-  async getAllRoles(req, res) {
-    try {
-      const roles = await roleService.getAllRoles();
-      res.status(200).json(roles);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
-
   async getRolePermissions(req, res) {
     try {
       const { roleId } = req.params;
+      const role = await roleService.getRoleById({ id: roleId });
+      console.log(role);
+      if (!role[0]) return res.json({ error: "role doesn't exists" });
       const permissions = await roleService.getPermissionsOfRole(roleId);
 
       res.status(200).json(permissions);
@@ -110,7 +104,7 @@ module.exports = {
       const { roleId } = req.params;
       const role = await roleService.deleteRole(roleId);
 
-      if (!role) return res.status(404).json({ error: 'Schedule not found' });
+      if (!role) return res.status(404).json({ error: 'Role not found' });
 
       res.status(200).json({ message: 'deleted successfuly' });
     } catch (err) {

@@ -25,6 +25,12 @@ router.get(
   teacherController.getSubjects
 );
 router.get(
+  '/subjects',
+  authMiddleware,
+  hasPermission('get_teacher_schedule'),
+  teacherController.getTeacherSchedule
+);
+router.get(
   '/:id',
   authMiddleware,
   hasPermission('get_teacher'),

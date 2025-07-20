@@ -18,6 +18,8 @@ exports.seed = async function (knex) {
     { name: 'delete_user' },
     { name: 'show_users' },
     { name: 'update_user' },
+    { name: 'search_user' },
+    { name: 'paginate_user' },
     // role
     { name: 'create_role' },
     { name: 'show_all_roles' },

@@ -64,6 +64,7 @@ module.exports = {
       const hash = bcrypt.hashSync(password);
       const role = await roleService.getAllRoles();
       const validRole = role.filter((role) => role_id === role.id);
+
       if (validRole.length === 0) {
         return res.status(400).json({ error: 'invalid role' });
       }
