@@ -1,5 +1,6 @@
 const studentService = require('../services/studentService');
 const userService = require('../services/userService');
+const roleService = require('../services/roleService');
 const {  validationResult } = require('express-validator');
 
 const bcrypt=require('bcrypt-nodejs');
@@ -15,7 +16,11 @@ module.exports = {
       
       const { name, email, password, phone, birth_date, class_id, curriculum_id, grade_level } = req.body;
       const hash = bcrypt.hashSync(password);
-      
+      const role=await roleService.getRoleByName('student');
+      console.log(role)
+      if (!role||role.length==0){
+        return res.status(400).json({msg:'there is no role for student'});
+      }
       // Using transaction
       const result = await db.transaction(async (trx) => {
         // Create user within transaction
@@ -24,7 +29,7 @@ module.exports = {
           birth_date: birth_date,
           email: email,
           phone: phone,
-          role: 'student',
+          role_id:role[0].id,
           password_hash: hash
         }, trx);
         

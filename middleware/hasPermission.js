@@ -4,6 +4,7 @@ function hasPermission(permissionName) {
   return async (req, res, next) => {
     try {
       const user = req.user;
+     
       if (!user || !user.role_id)
         return res.status(403).json({ error: 'No role assigned' });
 

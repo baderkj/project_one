@@ -6,7 +6,7 @@ module.exports = {
     try {
       const { name, permissions } = req.body;
 
-      const exists = await roleService.gerRoleByName(name);
+      const exists = await roleService.getRoleByName(name);
 
       if (!exists[0]) {
         const permissionsFromDB = await db('permissions').select('id');

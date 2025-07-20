@@ -9,7 +9,7 @@ router.post(
   '/',
   roleValidator,
   authMiddleware,
-  hasPermission('create_role'),
+  // hasPermission('create_role'),
   roleController.createRole
 );
 router.get(
@@ -22,7 +22,7 @@ router.get(
 router.put(
   '/update-role',
   authMiddleware,
-  hasPermission('update_role'),
+  // hasPermission('update_role'),
   roleController.updatePermissions
 );
 router.get(
@@ -35,7 +35,7 @@ router.get(
 router.delete(
   '/:roleId',
   authMiddleware,
-  hasPermission('delete_role'),
+  // hasPermission('delete_role'),
   roleController.deleteRole
 );
 

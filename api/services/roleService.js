@@ -28,11 +28,11 @@ module.exports = {
     return await RolePermission.getPermissionsByRoleId(roleId);
   },
 
-  async gerRoleByName(name) {
+  async getRoleByName(name) {
     return await Role.getRoleByName(name);
   },
 
-  async gerRoleById({ id }) {
+  async getRoleById({ id }) {
     return await Role.getRoleById({ id });
   },
 

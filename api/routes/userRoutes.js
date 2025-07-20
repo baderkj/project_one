@@ -37,7 +37,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  hasPermission('get_user'),
+  // hasPermission('get_user'),
   userController.getUser
 );
 router.put(

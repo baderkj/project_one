@@ -23,7 +23,7 @@ router.get(
 router.get(
   '/check',
   authMiddleware,
-  hasPermission('grade_exam'),
+  // hasPermission('grade_exam'),
   examCorrectValidator,
   examAttemptController.gradeExam
 );

@@ -24,7 +24,10 @@ module.exports = {
         qualification,
       } = req.body;
       const hash = bcrypt.hashSync(password);
-      const role = await roleService.gerRoleByName('teacher');
+      const role = await roleService.getRoleByName('teacher');
+      if (!role||role.length==0){
+        return res.status(400).json({msg:'there is no role for teacher'});
+      }
       const result = await db.transaction(async (trx) => {
         // Create user within transaction
         const user = await userService.createUser(

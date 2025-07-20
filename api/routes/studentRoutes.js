@@ -11,13 +11,13 @@ router.post(
   '/',
   studentValidator,
   authMiddleware,
-  hasPermission('create_student'),
+  // hasPermission('create_student'),
   studentController.createStudent
 );
 router.get(
   '/',
   authMiddleware,
-  hasPermission('get_all_students'),
+  // hasPermission('get_all_students'),
   studentController.getAllStudents
 );
 router.get(

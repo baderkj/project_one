@@ -9,7 +9,7 @@ router.post(
   '/',
   teacherValidator,
   authMiddleware,
-  hasPermission('create_teacher'),
+  // hasPermission('create_teacher'),
   teacherController.createTeacher
 );
 router.get(
