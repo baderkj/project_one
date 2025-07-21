@@ -12,7 +12,8 @@ module.exports = {
       {
           return res.status(400).json({ errors: errors.array() });
       } 
-      const AttendanceStudents = await attendanceStudentsService.createAttendanceStudents(req.body);
+      const {attendance}=req.body;
+      const AttendanceStudents = await attendanceStudentsService.createAttendanceStudents(attendance);
       res.status(201).json(AttendanceStudents);
     } catch (error) {
       res.status(400).json({ error: error.message });
