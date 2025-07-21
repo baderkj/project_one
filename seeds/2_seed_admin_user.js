@@ -9,19 +9,16 @@ const userService = require('../api/services/userService');
  * @returns { Promise<void> }
  */
 exports.seed = async function (knex) {
-  // 1. Clear users if needed (optional)
+  console.log('seeding admin user');
   await knex('users').del();
 
-  // 2. Get admin role (or create it)
   let [adminRole] = await knex('roles').where({ name: 'admin' });
   if (!adminRole) {
     [adminRole] = await knex('roles').insert({ name: 'admin' }).returning('*');
   }
 
-  // 3. Get all permissions
   const permissions = await knex('permissions').select('id');
 
-  // 4. Link all permissions to admin role
   const existingLinks = await knex('role_permissions').where({
     role_id: adminRole.id,
   });
@@ -35,7 +32,6 @@ exports.seed = async function (knex) {
     await knex('role_permissions').insert(rolePermissions);
   }
 
-  // 5. Create admin user
   const hashedPassword = await bcrypt.hashSync('Admin123');
   const existingUser = await knex('users')
     .where({ email: 'admin@system.com' })
@@ -52,8 +48,11 @@ exports.seed = async function (knex) {
     });
   }
   const hashedPassword1 = await bcrypt.hashSync('Student123');
+
   const student = await roleService.getRoleByName('student');
   console.log(student);
+
+
   const existingUser1 = await knex('users')
     .where({ email: 'student@system.com' })
     .first();

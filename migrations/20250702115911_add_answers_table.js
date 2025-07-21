@@ -8,7 +8,7 @@ exports.up = function(knex) {
         table.integer('question_id').unsigned().notNullable().checkPositive();
         table.integer('option_id').unsigned().notNullable().checkPositive();
         table.integer('exam_attempt_id').unsigned().notNullable().checkPositive();
-        table.integer('mark_awarded').unsigned().nullable().checkPositive();
+        table.integer('mark_awarded').unsigned().nullable();
        
  
 
@@ -17,7 +17,10 @@ exports.up = function(knex) {
         table.foreign('exam_attempt_id').references('exam_attempts.id').onDelete('CASCADE');
 
         table.timestamps(true, true); // created_at and updated_at
-      });
+      })
+      .then(() =>
+        knex.raw('ALTER TABLE answers ADD CONSTRAINT answers_mark_awarded_check CHECK (mark_awarded >= 0)')
+      );
 };
 
 /**
