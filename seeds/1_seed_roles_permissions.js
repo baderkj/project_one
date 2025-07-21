@@ -3,6 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.seed = async function (knex) {
+  console.log('seeding roles and permissions');
   await knex('role_permissions').del();
   await knex('permissions').del();
   await knex('roles').del();
