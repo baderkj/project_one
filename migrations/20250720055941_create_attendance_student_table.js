@@ -14,7 +14,7 @@ exports.up = function(knex) {
       //
       table.foreign('student_id').references('students.id').onDelete('cascade');
       table.foreign('created_by').references('users.id').onDelete('cascade');
-    })
+    });
   };
   
   /**

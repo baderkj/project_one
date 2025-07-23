@@ -18,6 +18,7 @@ exports.seed = async function (knex) {
     { name: 'get_user' },
     { name: 'delete_user' },
     { name: 'show_users' },
+    { name: 'get_employees' },
     { name: 'update_user' },
     { name: 'search_user' },
     { name: 'paginate_user' },
@@ -140,12 +141,18 @@ exports.seed = async function (knex) {
     { name: 'get_answer' },
     { name: 'update_answer' },
     { name: 'delete_answer' },
-    // attendance
+    // attendance students
     { name: 'create_students_attendance' },
     { name: 'get_all_students_attendance' },
     { name: 'get_students_attendance' },
     { name: 'update_students_attendance' },
     { name: 'delete_students_attendance' },
+     // attendance employees
+     { name: 'create_employees_attendance' },
+     { name: 'get_all_employees_attendance' },
+     { name: 'get_employees_attendance' },
+     { name: 'update_employees_attendance' },
+     { name: 'delete_employees_attendance' },
   ];
 
   const permissions = await knex('permissions')

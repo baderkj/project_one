@@ -71,6 +71,9 @@ module.exports = {
     };
   },
   
+  async getEmployees() {
+    return await User.getEmployees();
+  },
 
 
 };

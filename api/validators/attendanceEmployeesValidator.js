@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
 
-exports.attendanceStudentsValidator = [
+exports.attendanceEmployeesValidator = [
   body('attendance').isArray().withMessage('Invalide attendance'),
  
 ];

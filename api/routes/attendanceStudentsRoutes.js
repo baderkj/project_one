@@ -8,7 +8,7 @@ const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
   '/',
-  // attendanceStudentsValidator,
+  attendanceStudentsValidator,
   authMiddleware,
   hasPermission('create_students_attendance'),
   attendanceStudentsController.createAttendanceStudents

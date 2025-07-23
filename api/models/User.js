@@ -25,7 +25,7 @@ class User {
 
 
   static async findWithRole(id) {
-    return db('users')
+    return await db('users')
       .join('roles', 'users.role_id', 'roles.id')
       .select('users.*', 'roles.name as role')
       .where('users.id', id)
@@ -62,6 +62,13 @@ class User {
    
   }
 
+  static async getEmployees() {
+    return await db('users')
+    .join('roles', 'users.role_id', 'roles.id')
+    .where('roles.name','!=', 'student')
+    .where('roles.name','!=', 'admin')
+    .select('users.*', 'roles.name as role');
+  }
 
 }
 

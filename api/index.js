@@ -23,7 +23,8 @@ const examQuestionRoutes = require('./routes/examQuestionRoutes');
 
 const roleRoutes = require('./routes/roleRoutes');
 const attendanceStudentsRoutes = require('./routes/attendanceStudentsRoutes');
-// const productRoutes = require('./routes/productRoutes');
+const attendanceEmployeesRoutes = require('./routes/attendanceEmployeesRoutes');
+
 
 // Mount routes
 router.use('/users', userRoutes);
@@ -46,7 +47,7 @@ router.use('/exam_attempts', examAttemptRoutes);
 router.use('/exam_question', examQuestionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/attendance_students', attendanceStudentsRoutes);
-
+router.use('/attendance_employees', attendanceEmployeesRoutes);
 
 module.exports = router;
 

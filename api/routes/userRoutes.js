@@ -20,7 +20,12 @@ router.get(
   hasPermission('show_users'),
   userController.getAllUsers
 );
-
+router.get(
+  '/employees',
+  authMiddleware,
+  hasPermission('get_employees'),
+  userController.getEmployees
+);
 router.get(
   '/search/:name',
   authMiddleware,
