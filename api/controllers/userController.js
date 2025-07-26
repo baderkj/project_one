@@ -143,9 +143,9 @@ module.exports = {
 
   async getEmployees(req, res) {
     try {
-      const emplyees = await userService.getEmployees(req.params.id);
-      if (!emplyees) return res.status(404).json({ error: 'emplyees not found' });
-      res.json(emplyees);
+      const employees = await userService.getEmployees(req.params.id);
+      if (!employees) return res.status(404).json({ error: 'employees not found' });
+      res.json(employees);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
