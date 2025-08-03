@@ -72,8 +72,8 @@ exports.seed = async function (knex) {
       // Create student within the same transaction
       const studentCreate = await studentService.createStudent({
         user_id: user[0].id,
-        class_id:2,
-        curriculum_id:1,
+        class_id:1,
+        curriculum_id:2,
         grade_level:9,
       }, trx);
       

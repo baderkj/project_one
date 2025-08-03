@@ -13,7 +13,7 @@ class Role {
     return await db('roles').where({ name }).select('*');
   }
 
-  static async getRoleById({ id }) {
+  static async getRoleById(id ) {
     return await db('roles').where({ id }).select('*');
   }
 

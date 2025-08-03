@@ -14,13 +14,15 @@ module.exports = {
         return res.status(400).json({ errors: errors.array() });
       }  
       
-      const { name, email, password, phone, birth_date, class_id, curriculum_id, grade_level } = req.body;
+      const { name, email, password, phone, birth_date, class_id, grade_level } = req.body;
       const hash = bcrypt.hashSync(password);
       const role=await roleService.getRoleByName('student');
       console.log(role)
       if (!role||role.length==0){
         return res.status(400).json({msg:'there is no role for student'});
       }
+      const curriculum=await studentService.getCurriculumId(grade_level);
+      console.log(curriculum);
       // Using transaction
       const result = await db.transaction(async (trx) => {
         // Create user within transaction
@@ -37,7 +39,7 @@ module.exports = {
         const student = await studentService.createStudent({
           user_id: user[0].id,
           class_id: class_id,
-          curriculum_id: curriculum_id,
+          curriculum_id: curriculum.id,
           grade_level: grade_level,
         }, trx);
         

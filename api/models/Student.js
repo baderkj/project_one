@@ -12,10 +12,13 @@ class Student {
     return await db('students').where({ id }).first();
   }
 
-  // static async findByEmail(email) {
-  //  const user= await db('users').where({email}).first();
-  //   return await db('students').where({ user_id:user.id }).first();
-  // }
+  static async findByUserId(user_id) {
+    return await db('students').where({ user_id }).first();
+  }
+
+  static async getCurriculumId(grade_level) {
+    return await db('curriculums').where({ level_grade:grade_level,is_active:true }).first();
+  }
   async findByEmail(email, trx = null) {
     const user= await db('users').where({email}).first();
     const query =  db('students').where({ user_id:user.id }).first();
@@ -61,7 +64,7 @@ class Student {
       .where('st.id', id)
       .select('p.id as period_id', 'p.start_time', 'p.end_time', 'd.id as day_id', 'd.name as day_name', 'su.name as subject_name')
       .orderBy('d.id', 'asc') // Ensure days are ordered
-      .orderBy('p.id', 'asc'); 
+      .orderBy('p.start_time', 'asc'); 
       
     
 
@@ -87,6 +90,8 @@ class Student {
     // Convert to array format if preferred
     return Object.values(scheduleByDay);
   }
+
+
 }
 
 module.exports = Student;

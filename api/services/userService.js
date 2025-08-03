@@ -1,6 +1,11 @@
 const User = require('../models/User');
 const axios = require('axios');
 module.exports = {
+  async removeHashedPassword(user) {
+    const {password_hash,created_at,updated_at,...userData}=user;
+    return userData;
+  },
+
   async createUser(userData, trx = null) {
     return await User.create(userData, trx);
   },
@@ -9,7 +14,7 @@ module.exports = {
     return await User.findById(id);
   },
 
-  async sendMessage(to, body) {
+  async sendWhatsAppMessage(to, body) {
 
     console.log(process.env.ULTRA_MSG_API_URL);
     try {

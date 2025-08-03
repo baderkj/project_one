@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
   user: 'postgres',
   password: 'bader1234',
-  database: 'school_db_2',
+  database: 'school_db_3',
 });
 
 function checkRoles(allowedRoles) {

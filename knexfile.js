@@ -8,7 +8,7 @@ module.exports = {
       port: 5432,
       user: 'postgres',
       password: process.env.DB_PASS||'',
-      database: 'school_db_2',
+      database: 'school_db_3',
     },
   },
 

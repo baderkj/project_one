@@ -5,6 +5,8 @@ const { db } = require('../../config/db');
 const jwt = require('jsonwebtoken');
 const { messaging } = require('firebase-admin');
 const roleService = require('../services/roleService');
+const studentService = require('../services/studentService');
+const teacherService = require('../services/teacherService');
 require('dotenv').config();
 module.exports = {
   async signIn(req, res) {
@@ -46,7 +48,21 @@ module.exports = {
       );
 
       // 4. Return user data (without password)
-      const { password_hash, ...userData } = user;
+      let userData=await userService.removeHashedPassword(user);
+
+      const result =await userService.findUserWithRole(user.id);
+      console.log(result)
+
+      if(result.role=='student'){
+        const student= await studentService.findByUserId(user.id);
+        let studentData=await userService.removeHashedPassword(student);
+        userData={...userData,...studentData,role:result.role}
+      }else if(result.role=='teacher')
+      {
+        const teacher= await teacherService.findByUserId(user.id);
+        let teacherData=await userService.removeHashedPassword(teacher);
+        userData={...userData,...teacherData,role:result.role}
+      }
       res.json({ user: userData, token });
     } catch (err) {
       console.error('SignIn error:', err);
@@ -76,8 +92,9 @@ module.exports = {
         role_id: validRole[0].id,
         password_hash: hash,
       });
-      res.status(201).json(user);
-      return user.id;
+       const userData= await userService.removeHashedPassword(user[0]);
+      res.status(201).json(userData);
+     
     } catch (error) {
       res.status(400).json({ error: error.message, msg: 'bad data' });
     }
@@ -87,7 +104,8 @@ module.exports = {
     try {
       const user = await userService.getUser(req.params.id);
       if (!user) return res.status(404).json({ error: 'User not found' });
-      res.json(user);
+      const userData= await userService.removeHashedPassword(user);
+      res.json(userData);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -104,6 +122,11 @@ module.exports = {
 
   async updateUser(req, res) {
     try {
+      const {password_hash}=req.body;
+      if(password_hash){
+        res.status(400).json({msg:"password hash can't be in updated user"})
+        return;
+      }
       const user = await userService.updateUser(req.params.id, req.body);
       if (!user || user.length == 0)
         return res.status(404).json({ error: 'User not found' });
@@ -126,6 +149,7 @@ module.exports = {
   async search(req, res) {
     try {
       const users = await userService.search(req.params.name);
+      
       res.json(users);
     } catch (error) {
       res.status(500).json({ error: error.message });

@@ -12,7 +12,9 @@ class User {
   }
 
   static async findAll() {
-    return await db('users').select('*');
+    return await db('users').select('id',
+      'name','email','role_id','phone','birth_date'
+    );;
   }
 
   static async update(id, updates) {
@@ -33,7 +35,9 @@ class User {
   }
 
   static async search(name) {
-    return await db('users').where('name', 'like', `%${name}%`).select('*');
+    return await db('users').where('name', 'like', `%${name}%`).select('id',
+      'name','email','role_id','phone','birth_date'
+    );
   }
 
   static async paginate({

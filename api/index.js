@@ -24,7 +24,8 @@ const examQuestionRoutes = require('./routes/examQuestionRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const attendanceStudentsRoutes = require('./routes/attendanceStudentsRoutes');
 const attendanceEmployeesRoutes = require('./routes/attendanceEmployeesRoutes');
-
+const fcmTokenRoutes = require('./routes/fcmTokenRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Mount routes
 router.use('/users', userRoutes);
@@ -48,6 +49,7 @@ router.use('/exam_question', examQuestionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/attendance_students', attendanceStudentsRoutes);
 router.use('/attendance_employees', attendanceEmployeesRoutes);
-
+router.use('/fcm', fcmTokenRoutes);
+router.use('/notifications', notificationRoutes);
 module.exports = router;
 

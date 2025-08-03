@@ -10,6 +10,10 @@ module.exports = {
     return await Teacher.findById(id);
   },
 
+  async findByUserId(id) {
+    return await Teacher.findByUserId(id);
+  },
+
   async getAllTeachers() {
     return await Teacher.findAll();
   },

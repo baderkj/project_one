@@ -9,7 +9,7 @@ router.post(
   '/',
   teacherValidator,
   authMiddleware,
-  // hasPermission('create_teacher'),
+  hasPermission('create_teacher'),
   teacherController.createTeacher
 );
 router.get(
@@ -25,9 +25,9 @@ router.get(
   teacherController.getSubjects
 );
 router.get(
-  '/subjects',
+  '/schedule',
   authMiddleware,
-  hasPermission('get_teacher_schedule'),
+  // hasPermission('get_teacher_schedule'),
   teacherController.getTeacherSchedule
 );
 router.get(

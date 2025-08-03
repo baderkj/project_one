@@ -35,6 +35,8 @@ exports.seed = async function (knex) {
     { name: 'get_teacher' },
     { name: 'update_teacher' },
     { name: 'delete_teacher' },
+    { name: 'get_teacher_schedule' },//added 3/8/2025
+    
     // subject
     { name: 'create_subject' },
     { name: 'get_all_subjects' },
@@ -50,6 +52,8 @@ exports.seed = async function (knex) {
     { name: 'get_student' },
     { name: 'update_student' },
     { name: 'delete_student' },
+    { name: 'get_student_schedule' },//added 3/8/2025
+    
     // schedule
     { name: 'create_schedule' },
     { name: 'get_all_schedule' },
@@ -153,6 +157,21 @@ exports.seed = async function (knex) {
      { name: 'get_employees_attendance' },
      { name: 'update_employees_attendance' },
      { name: 'delete_employees_attendance' },
+      // Fcm
+      { name: 'create_fcm_token' },
+      { name: 'get_all_fcm_token' },
+      { name: 'send_message' },
+      { name: 'get_fcm_token' },
+      { name: 'update_fcm_token' },
+      { name: 'delete_fcm_token' },
+        // notification
+        { name: 'create_notification' },
+        { name: 'get_notifications_for_user' },
+        { name: 'get_all_notification' },
+        { name: 'get_notification' },
+        { name: 'update_notification' },
+        { name: 'update_notification_to_read' },
+        { name: 'delete_notification' },
   ];
 
   const permissions = await knex('permissions')

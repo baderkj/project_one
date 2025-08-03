@@ -9,7 +9,12 @@ module.exports = {
   async getStudent(id) {
     return await Student.findById(id);
   },
-
+  async getCurriculumId(grade_level) {
+    return await Student.getCurriculumId(grade_level);
+  },
+  async findByUserId(id) {
+    return await Student.findByUserId(id);
+  },
   async findByEmail(email,trx=null) {
     return await Student.findByEmail(email,trx);
   },

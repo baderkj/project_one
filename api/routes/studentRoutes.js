@@ -38,7 +38,10 @@ router.get(
   hasPermission('get_student_archive'),
   studentController.getStudentArchive
 );
-router.get('/schedule', studentController.getStudentSchedule);
+router.get('/schedule', 
+  authMiddleware,
+  // hasPermission('get_student_schedule'),
+  studentController.getStudentSchedule);
 router.get(
   '/:id',
   authMiddleware,

@@ -12,6 +12,10 @@ class Teacher {
     return await db('teachers').where({ id }).first();
   }
 
+  static async findByUserId(user_id) {
+    return await db('teachers').where({ user_id }).first();
+  }
+
   static async findAll() {
     return await db('teachers').select('*') ;
   }
@@ -29,13 +33,34 @@ class Teacher {
     .select('su.*');
   }
   static async getTeacherSchedule(id) {
-    return await db('schedules as sc')
+    const scheduleEntries = await db('schedules as sc')
     
     .join('days as d', 'd.id', 'sc.day_id')
     .join('periods as p', 'p.id', 'sc.period_id')
     .join('subjects as su', 'su.id', 'sc.subject_id')
     .where('su.teacher_id', id) 
     .select('p.*','d.*','su.name as subject_name');
+    const scheduleByDay = {};
+    scheduleEntries.forEach(entry => {
+      if (!scheduleByDay[entry.name]) {
+        scheduleByDay[entry.name] = {
+          day_id: entry.day_id,
+          name: entry.name,
+          subjects: []
+        };
+      }
+      
+      scheduleByDay[entry.name].subjects.push({
+        
+        start_time: entry.start_time,
+        end_time: entry.end_time,
+        subject_name: entry.subject_name
+      });
+    });
+    
+    // Convert to array format if preferred
+    return Object.values(scheduleByDay);
+    
   }
 }
 

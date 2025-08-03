@@ -36,7 +36,7 @@ async function ll (){
 // ll();
 
 
-// userService.sendMessage('+963948576512','usdsdfs');
+// userService.sendWhatsAppMessage('+963948576512','usdsdfs');
 
 // API routes
 app.use('/api', apiRouter);
