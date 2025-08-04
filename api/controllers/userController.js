@@ -49,21 +49,22 @@ module.exports = {
 
       // 4. Return user data (without password)
       let userData=await userService.removeHashedPassword(user);
-
+      let userAll=await userService.removeTimeStamp(userData);
+      
       const result =await userService.findUserWithRole(user.id);
       console.log(result)
 
       if(result.role=='student'){
         const student= await studentService.findByUserId(user.id);
-        let studentData=await userService.removeHashedPassword(student);
-        userData={...userData,...studentData,role:result.role}
+        let studentData=await userService.removeTimeStamp(student);
+        userAll={...userAll,...studentData,role:result.role}
       }else if(result.role=='teacher')
       {
         const teacher= await teacherService.findByUserId(user.id);
-        let teacherData=await userService.removeHashedPassword(teacher);
-        userData={...userData,...teacherData,role:result.role}
+       
+        userAll={...userAll,...teacher,role:result.role}
       }
-      res.json({ user: userData, token });
+      res.json({ user: userAll, token });
     } catch (err) {
       console.error('SignIn error:', err);
       res.status(500).json('Internal server error');
@@ -76,7 +77,10 @@ module.exports = {
       if (!errors.isEmpty()) {
         return res.status(400).json({ error: errors.array() });
       }
-      const { name, email, password, role_id, phone, birth_date } = req.body;
+      const { name, email, role_id, phone, birth_date } = req.body;
+
+      const password = userService.generateRandomPassword();
+      console.log(password);
       const hash = bcrypt.hashSync(password);
       const role = await roleService.getAllRoles();
       const validRole = role.filter((role) => role_id === role.id);
@@ -92,6 +96,13 @@ module.exports = {
         role_id: validRole[0].id,
         password_hash: hash,
       });
+      console.log(user);
+      if(user[0]){
+        const sendMessage= await userService.sendWhatsAppMessage(user[0].phone,`your email is : ${email} 
+    and password is:
+    ${password}`);
+          console.log(sendMessage);
+      }
        const userData= await userService.removeHashedPassword(user[0]);
       res.status(201).json(userData);
      

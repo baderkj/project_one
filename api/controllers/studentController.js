@@ -14,7 +14,9 @@ module.exports = {
         return res.status(400).json({ errors: errors.array() });
       }  
       
-      const { name, email, password, phone, birth_date, class_id, grade_level } = req.body;
+      const { name, email, phone, birth_date, class_id, grade_level } = req.body;
+      const password = userService.generateRandomPassword();
+
       const hash = bcrypt.hashSync(password);
       const role=await roleService.getRoleByName('student');
       console.log(role)
@@ -34,7 +36,12 @@ module.exports = {
           role_id:role[0].id,
           password_hash: hash
         }, trx);
-        
+        if(user[0]){
+          const sendMessage= await userService.sendWhatsAppMessage(user[0].phone,`your email is : ${email} 
+      and password is:
+      ${password}`);
+            console.log(sendMessage);
+        }
         // Create student within the same transaction
         const student = await studentService.createStudent({
           user_id: user[0].id,

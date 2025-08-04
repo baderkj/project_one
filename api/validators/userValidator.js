@@ -7,7 +7,7 @@ exports.UserValidator = [
   body('phone').isLength({ min: 10 }).withMessage('Invalid phone'),
   body('birth_date').isDate().withMessage('Invalid birth_date'),
 
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 6 chars'),
+  // body('password')
+  //   .isLength({ min: 8 })
+  //   .withMessage('Password must be at least 6 chars'),
 ];

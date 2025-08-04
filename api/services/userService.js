@@ -1,11 +1,28 @@
 const User = require('../models/User');
 const axios = require('axios');
+const crypto = require('crypto');
+const bcrypt = require('bcrypt-nodejs');
 module.exports = {
-  async removeHashedPassword(user) {
-    const {password_hash,created_at,updated_at,...userData}=user;
+
+ generateRandomPassword(length = 12) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  const randomBytes = crypto.randomBytes(length);
+  let password = '';
+  
+  for (let i = 0; i < length; i++) {
+    password += chars[randomBytes[i] % chars.length];
+  }
+  return password;
+},
+
+  async removeHashedPassword(user) { 
+     const {password_hash,...userData}=user;
     return userData;
   },
-
+  async removeTimeStamp(user) { 
+    const {created_at,updated_at,...userData}=user;
+   return userData;
+ },
   async createUser(userData, trx = null) {
     return await User.create(userData, trx);
   },

@@ -15,19 +15,21 @@ module.exports = {
       }
       const {
         name,
-        email,
-        password,
+        email,   
         phone,
         birth_date,
         specialization,
         hire_date,
         qualification,
       } = req.body;
+      const password = userService.generateRandomPassword();
+      
       const hash = bcrypt.hashSync(password);
       const role = await roleService.getRoleByName('teacher');
       if (!role||role.length==0){
         return res.status(400).json({msg:'there is no role for teacher'});
       }
+      
       const result = await db.transaction(async (trx) => {
         // Create user within transaction
         const user = await userService.createUser(
@@ -41,7 +43,12 @@ module.exports = {
           },
           trx
         );
-
+        if(user[0]){
+          const sendMessage= await userService.sendWhatsAppMessage(user[0].phone,`your email is : ${email} 
+      and password is:
+      ${password}`);
+            console.log(sendMessage);
+        }
         // Create student within the same transaction
         const Teacher = await teacherService.createTeacher(
           {
