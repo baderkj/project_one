@@ -7,35 +7,42 @@ const { subjectValidator } = require('../validators/subjectValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  subjectValidator,
-  authMiddleware,
-  hasPermission('create_subject'),
-  subjectController.createSubject
+    '/',
+    subjectValidator,
+    authMiddleware,
+    hasPermission('create_subject'),
+    subjectController.createSubject
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_subjects'),
-  subjectController.getAllSubjectes
+    '/',
+    authMiddleware,
+    hasPermission('get_all_subjects'),
+    subjectController.getAllSubjectes
+);
+
+router.get(
+    '/list',
+    authMiddleware,
+    hasPermission('get_all_subjects'),
+    subjectController.getSubjectsList
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_subject'),
-  subjectController.getSubject
+    '/:id',
+    authMiddleware,
+    hasPermission('get_subject'),
+    subjectController.getSubject
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_subject'),
-  subjectController.updateSubject
+    '/:id',
+    authMiddleware,
+    hasPermission('update_subject'),
+    subjectController.updateSubject
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_subject'),
-  subjectController.deleteSubject
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_subject'),
+    subjectController.deleteSubject
 );
 
 //,subjectValidator,authMiddleware,checkRoles(['admin'])

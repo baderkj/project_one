@@ -8,7 +8,7 @@ const teacherRoutes = require('./routes/teacherRoutes');
 const classRoutes = require('./routes/classRoutes');
 const curriculumRoutes = require('./routes/curriculumRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
-const academicYearRoutes = require('./routes/academicYearRoutes');
+const semesterRoutes = require('./routes/semesterRoutes');
 const archiveRoutes = require('./routes/archiveRoutes');
 const dayRoutes = require('./routes/dayRoutes');
 const periodRoutes = require('./routes/periodRoutes');
@@ -25,7 +25,6 @@ const roleRoutes = require('./routes/roleRoutes');
 const attendanceStudentsRoutes = require('./routes/attendanceStudentsRoutes');
 const attendanceEmployeesRoutes = require('./routes/attendanceEmployeesRoutes');
 
-
 // Mount routes
 router.use('/users', userRoutes);
 router.use('/teachers', teacherRoutes);
@@ -33,7 +32,7 @@ router.use('/students', studentRoutes);
 router.use('/classes', classRoutes);
 router.use('/curriculums', curriculumRoutes);
 router.use('/subjects', subjectRoutes);
-router.use('/academic_years', academicYearRoutes);
+router.use('/semesters', semesterRoutes);
 router.use('/archives', archiveRoutes);
 router.use('/days', dayRoutes);
 router.use('/periods', periodRoutes);
@@ -50,4 +49,3 @@ router.use('/attendance_students', attendanceStudentsRoutes);
 router.use('/attendance_employees', attendanceEmployeesRoutes);
 
 module.exports = router;
-

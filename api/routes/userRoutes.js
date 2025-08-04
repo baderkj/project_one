@@ -7,6 +7,7 @@ const authMiddleware = require('../../middleware/authMiddleware');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post('/signin', userController.signIn);
+router.post('/signout', authMiddleware, userController.signOut);
 router.post(
   '/',
   UserValidator,
@@ -39,6 +40,12 @@ router.get(
   userController.paginate
 );
 
+router.get(
+  '/current-user',
+  authMiddleware,
+  // hasPermission('get_user'),
+  userController.getUserByToken
+);
 router.get(
   '/:id',
   authMiddleware,

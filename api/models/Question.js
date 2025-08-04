@@ -1,7 +1,7 @@
-const {db} = require('../../config/db');
+const { db } = require('../../config/db');
 
 class Question {
-  static async create(questionData) { 
+  static async create(questionData) {
     return await db('questions').insert(questionData).returning('*');
   }
 
@@ -10,13 +10,18 @@ class Question {
   }
 
   static async findAll() {
-    return await db('questions').select('*') ;
+    return await db('questions').select('*');
+  }
+
+  static async getExamQuestions(exam_id) {
+    console.log('object');
+    return await db('questions').select('*').where({ exam_id });
   }
 
   static async update(id, updates) {
     return await db('questions').where({ id }).update(updates).returning('*');
   }
- 
+
   static async delete(id) {
     return await db('questions').where({ id }).del();
   }
