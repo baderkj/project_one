@@ -9,7 +9,7 @@ exports.up = function (knex) {
       .integer('archive_id')
       .unsigned()
       .references('id')
-      .inTable('archive')
+      .inTable('archives')
       .onDelete('CASCADE');
     table
       .integer('subject_id')

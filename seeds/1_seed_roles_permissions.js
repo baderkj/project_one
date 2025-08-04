@@ -172,6 +172,13 @@ exports.seed = async function (knex) {
         { name: 'update_notification' },
         { name: 'update_notification_to_read' },
         { name: 'delete_notification' },
+        
+        // Semester
+        { name: 'create_semester' },
+        { name: 'get_all_semesters' },
+        { name: 'get_semester' },
+        { name: 'update_semester' },
+        { name: 'delete_semester' },
   ];
 
   const permissions = await knex('permissions')

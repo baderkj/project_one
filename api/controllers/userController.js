@@ -5,8 +5,6 @@ const { db } = require('../../config/db');
 const jwt = require('jsonwebtoken');
 const { messaging } = require('firebase-admin');
 const roleService = require('../services/roleService');
-const studentService = require('../services/studentService');
-const teacherService = require('../services/teacherService');
 require('dotenv').config();
 module.exports = {
   async signIn(req, res) {
@@ -122,6 +120,78 @@ module.exports = {
     }
   },
 
+  async getUserByToken(req, res) {
+    try {
+      const userId = req.user.id;
+      let user = await db('users')
+        .join('roles', 'roles.id', 'users.role_id')
+        .where('users.id', userId)
+        .select(
+          'users.id as user_id',
+          'users.name',
+          'users.email',
+          'roles.id as role_id',
+          'roles.name as role_name',
+          'users.phone',
+          'users.birth_date'
+        );
+      const role = await roleService.getRoleById({ id: user[0].role_id });
+      if (role[0].name === 'student') {
+        user = await db('users')
+          .join('students', 'students.user_id', 'users.id')
+          .join('roles', 'roles.id', 'users.role_id')
+          .join('classes', 'classes.id', 'students.class_id')
+          .join('curriculums', 'curriculums.id', 'students.curriculum_id')
+          .where('user_id', user[0].user_id)
+          .select(
+            // 'users.id as id',
+            'students.user_id',
+            'students.id as student_id',
+            'users.name',
+            'users.email',
+            'roles.id as role_id',
+            'roles.name as role_name',
+            'users.phone',
+            'users.birth_date',
+            'students.class_id',
+            'classes.class_name',
+            'classes.floor_number',
+            'students.curriculum_id',
+            'curriculums.is_active as is_curriculum_active',
+            'students.grade_level'
+          );
+      } else if (role[0].name === 'teacher') {
+        user = await db('users')
+          .join('teachers', 'teachers.user_id', 'users.id')
+          .join('roles', 'roles.id', 'users.role_id')
+          .where('user_id', user[0].user_id)
+          .select(
+            // 'users.id as id',
+            'teachers.user_id',
+            'teachers.id as teacher_id',
+            'users.name',
+            'users.email',
+            'roles.id as role_id',
+            'roles.name as role_name',
+            'users.phone',
+            'users.birth_date',
+            'teachers.specialization',
+            'teachers.hire_date',
+            'teachers.qualification'
+          );
+      }
+      if (!user[0]) return res.status(404).json({ error: 'User not found' });
+
+      const permissions = await roleService.getPermissionsOfRole(role[0].id);
+
+      const fileterPermissions = await permissions.map((el) => el.name);
+
+      res.json({ user, permissions: fileterPermissions });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   async getAllUsers(req, res) {
     try {
       const users = await userService.getAllUsers();
@@ -178,9 +248,29 @@ module.exports = {
 
   async getEmployees(req, res) {
     try {
-      const employees = await userService.getEmployees(req.params.id);
-      if (!employees) return res.status(404).json({ error: 'employees not found' });
-      res.json(employees);
+      const emplyees = await userService.getEmployees(req.params.id);
+      if (!emplyees) return res.status(404).json({ error: 'emplyees not found' });
+      res.json(emplyees);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  async signOut(req, res) {
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (!token) {
+        return res.status(400).json({ error: 'No token provided' });
+      }
+
+      // Decode token to get expiration time
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const expiresAt = new Date(decoded.exp * 1000);
+
+      // Add token to blacklist
+      await BlacklistedToken.create(token, expiresAt);
+
+      res.json({ message: 'Successfully signed out' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

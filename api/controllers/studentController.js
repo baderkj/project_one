@@ -1,10 +1,12 @@
 const studentService = require('../services/studentService');
 const userService = require('../services/userService');
 const roleService = require('../services/roleService');
-const {  validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
+const { db } = require('../../config/db');
 
-const bcrypt=require('bcrypt-nodejs');
+const bcrypt = require('bcrypt-nodejs');
 module.exports = {
+
   async createStudent(req, res) {
     const { db } = require('../../config/db');
     
@@ -134,17 +136,47 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+  async getStudentSubjectsNameList(req, res) {
+    const userId = req.user.id;
+    try {
+        const studentCurriculum = await db('students')
+            .select('curriculum_id')
+            .where({ user_id: userId })
+            .first();
+
+        if (!studentCurriculum) {
+            return res
+                .status(404)
+                .json({ error: 'Student record not found for this user' });
+        }
+        const subjects = await db('subjects')
+            .select('id', 'name as subject_name')
+            .where({ curriculum_id: studentCurriculum.curriculum_id });
+
+        if (!subjects)
+            return res.status(404).json({ error: 'Student not found' });
+
+        res.json(subjects);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+},
   
     async getStudentSchedule(req, res) {
         try {
-          const student = await studentService.getStudent(req.body.id);
-          if(!student) return res.status(404).json({error:'Student Not found'});
-            const schedules = await studentService.getStudentSchedule(req.body.id);
-            if (!schedules) return res.status(404).json({ error: 'Class not found' });
+            const userId = req.user.id;
+            const student = await db('students')
+                .select('*')
+                .where({ user_id: userId });
+
+            if (!student)
+                return res.status(404).json({ error: 'Student Not found' });
+            const schedules = await studentService.getStudentSchedule(userId);
+            if (!schedules)
+                return res.status(404).json({ error: 'Class not found' });
             res.json(schedules);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
     },
-
 };

@@ -1,4 +1,4 @@
-const {db} = require('../../config/db');
+const { db } = require('../../config/db');
 
 class Subject {
   static async create(SubjectData) {
@@ -10,7 +10,7 @@ class Subject {
   }
 
   static async findAll() {
-    return await db('subjects').select('*') ;
+    return await db('subjects').select('*');
   }
 
   static async update(id, updates) {
@@ -19,6 +19,10 @@ class Subject {
 
   static async delete(id) {
     return await db('subjects').where({ id }).del();
+  }
+
+  static async findAllNames() {
+    return await db('subjects').select('name');
   }
 }
 

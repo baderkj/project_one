@@ -23,7 +23,7 @@ class RolePermission {
     return db('role_permissions')
       .join('permissions', 'role_permissions.permission_id', 'permissions.id')
       .where({ role_id })
-      .select('*');
+      .select('permission_id', 'name');
   }
 }
 

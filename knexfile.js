@@ -1,6 +1,5 @@
 require('dotenv').config();
 module.exports = {
-
   development: {
     client: 'pg',
     connection: {
@@ -9,14 +8,12 @@ module.exports = {
       user: 'postgres',
       password: process.env.DB_PASS||'',
       database: 'school_db_3',
+
     },
   },
 
- 
-    migrations: {
-      directory: './migrations',
-      tableName: 'knex_migrations'
-    }
-  
-
+  migrations: {
+    directory: './migrations',
+    tableName: 'knex_migrations',
+  },
 };

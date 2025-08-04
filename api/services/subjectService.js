@@ -1,4 +1,4 @@
-const  Subject= require('../models/Subject');
+const Subject = require('../models/Subject');
 
 module.exports = {
   async createSubject(SubjectData) {
@@ -19,5 +19,9 @@ module.exports = {
 
   async deleteSubject(id) {
     return await Subject.delete(id);
-  }
+  },
+
+  async getAllSubjectsNames() {
+    return await Subject.findAllNames();
+  },
 };

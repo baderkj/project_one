@@ -26,7 +26,7 @@ const attendanceStudentsRoutes = require('./routes/attendanceStudentsRoutes');
 const attendanceEmployeesRoutes = require('./routes/attendanceEmployeesRoutes');
 const fcmTokenRoutes = require('./routes/fcmTokenRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
-
+const semesterRoutes = require('./routes/semesterRoutes');
 // Mount routes
 router.use('/users', userRoutes);
 router.use('/teachers', teacherRoutes);
@@ -39,7 +39,7 @@ router.use('/archives', archiveRoutes);
 router.use('/days', dayRoutes);
 router.use('/periods', periodRoutes);
 router.use('/schedules', scheduleRoutes);
-
+router.use('/semesters', semesterRoutes);
 router.use('/exams', examRoutes);
 router.use('/questions', questionRoutes);
 router.use('/options', optionRoutes);
@@ -51,5 +51,7 @@ router.use('/attendance_students', attendanceStudentsRoutes);
 router.use('/attendance_employees', attendanceEmployeesRoutes);
 router.use('/fcm', fcmTokenRoutes);
 router.use('/notifications', notificationRoutes);
-module.exports = router;
 
+
+
+module.exports = router;

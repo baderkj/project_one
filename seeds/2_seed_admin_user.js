@@ -47,11 +47,10 @@ exports.seed = async function (knex) {
       birth_date: '1990-01-01',
     });
   }
+
+  
   const hashedPassword1 = await bcrypt.hashSync('Student123');
-
   const student = await roleService.getRoleByName('student');
-  console.log(student);
-
 
   const existingUser1 = await knex('users')
     .where({ email: 'student@system.com' })

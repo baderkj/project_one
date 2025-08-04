@@ -6,60 +6,68 @@ const authMiddleware = require('../../middleware/authMiddleware');
 const { studentValidator } = require('../validators/studentValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
-
 router.post(
-  '/',
-  studentValidator,
-  authMiddleware,
-  // hasPermission('create_student'),
-  studentController.createStudent
+    '/',
+    studentValidator,
+    authMiddleware,
+    // hasPermission('create_student'),
+    studentController.createStudent
 );
 router.get(
-  '/',
-  authMiddleware,
-  // hasPermission('get_all_students'),
-  studentController.getAllStudents
+    '/',
+    authMiddleware,
+    // hasPermission('get_all_students'),
+    studentController.getAllStudents
 );
 router.get(
-  '/subjects',
-  authMiddleware,
-  hasPermission('get_student_subjects'),
-  studentController.getStudentSubjects
+    '/subjects',
+    authMiddleware,
+    hasPermission('get_student_subjects'),
+    studentController.getStudentSubjects
 );
 router.get(
-  '/class',
-  authMiddleware,
-  hasPermission('get_student_class'),
-  studentController.getClass
+    '/subjects-list',
+    authMiddleware,
+    hasPermission('get_student_subjects'),
+    studentController.getStudentSubjectsNameList
 );
 router.get(
-  '/archive',
-  authMiddleware,
-  hasPermission('get_student_archive'),
-  studentController.getStudentArchive
+    '/class',
+    authMiddleware,
+    hasPermission('get_student_class'),
+    studentController.getClass
 );
+
 router.get('/schedule', 
   authMiddleware,
-  // hasPermission('get_student_schedule'),
+  hasPermission('get_student_schedule'),
   studentController.getStudentSchedule);
+
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_student'),
-  studentController.getStudent
+    '/archive',
+    authMiddleware,
+    hasPermission('get_student_archive'),
+    studentController.getStudentArchive
+);
+
+router.get(
+    '/:id',
+    authMiddleware,
+    hasPermission('get_student'),
+    studentController.getStudent
 );
 
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_student'),
-  studentController.updateStudent
+    '/:id',
+    authMiddleware,
+    hasPermission('update_student'),
+    studentController.updateStudent
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_student'),
-  studentController.deleteStudent
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_student'),
+    studentController.deleteStudent
 );
 
 //authMiddleware,checkRoles(['admin']),

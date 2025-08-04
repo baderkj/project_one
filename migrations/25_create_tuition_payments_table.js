@@ -28,7 +28,7 @@ exports.up = function (knex) {
       .unsigned()
       .nullable()
       .references('id')
-      .inTable('archive')
+      .inTable('archives')
       .onDelete('SET NULL');
     table.index('student_id');
     table.index('payment_date');

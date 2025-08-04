@@ -1,4 +1,4 @@
-const Question= require('../models/Question');
+const Question = require('../models/Question');
 
 module.exports = {
   async createQuestion(QuestionData) {
@@ -13,11 +13,15 @@ module.exports = {
     return await Question.findAll();
   },
 
+  async getExamQuestions() {
+    return await Question.getExamQuestions();
+  },
+
   async updateQuestion(id, updates) {
     return await Question.update(id, updates);
   },
 
   async deleteQuestion(id) {
     return await Question.delete(id);
-  }
+  },
 };
