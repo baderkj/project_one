@@ -3,14 +3,14 @@
  * @returns { Promise<void> }
  */
 exports.seed = async function (knex) {
-  console.log('seeding roles and permissions');
-  await knex('role_permissions').del();
-  await knex('permissions').del();
-  await knex('roles').del();
+    console.log('seeding roles and permissions');
+    await knex('role_permissions').del();
+    await knex('permissions').del();
+    await knex('roles').del();
 
-  const [admin] = await knex('roles')
-    .insert([{ name: 'admin' }, { name: 'teacher' }, { name: 'student' }])
-    .returning('*');
+    const [admin] = await knex('roles')
+        .insert([{ name: 'admin' }, { name: 'teacher' }, { name: 'student' }])
+        .returning('*');
 
   const permissionsList = [
     // user
@@ -176,22 +176,36 @@ exports.seed = async function (knex) {
         { name: 'update_notification' },
         { name: 'update_notification_to_read' },
         { name: 'delete_notification' },
-        
+
         // Semester
         { name: 'create_semester' },
         { name: 'get_all_semesters' },
         { name: 'get_semester' },
         { name: 'update_semester' },
         { name: 'delete_semester' },
-  ];
 
-  const permissions = await knex('permissions')
-    .insert(permissionsList)
-    .returning('*');
+        // tuition payment
+        { name: 'create_tuition_payment' },
+        { name: 'bulk_create_payments' },
+        { name: 'get_all_tuition_payments' },
+        { name: 'get_payment_stats' },
+        { name: 'get_payments_by_date_range' },
+        { name: 'get_outstanding_payments' },
+        { name: 'get_tuition_payment' },
+        { name: 'update_tuition_payment' },
+        { name: 'verify_payment' },
+        { name: 'delete_tuition_payment' },
+        { name: 'get_student_payments' },
+        { name: 'get_student_payment_total' },
+        { name: 'get_student_balance' },
+    ];
+    const permissions = await knex('permissions')
+        .insert(permissionsList)
+        .returning('*');
 
-  const rolePermissions = [
-    ...permissions.map((p) => ({ role_id: admin.id, permission_id: p.id })),
-  ];
+    const rolePermissions = [
+        ...permissions.map((p) => ({ role_id: admin.id, permission_id: p.id })),
+    ];
 
-  await knex('role_permissions').insert(rolePermissions);
+    await knex('role_permissions').insert(rolePermissions);
 };
