@@ -69,5 +69,17 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+  
+  async getClassSchedule(req, res) {
+    try {
+      const classExists = await classService.getClass(req.body.id);
+      if (!classExists) return res.status(404).json({ error: 'Class not found' });
+      const schedules = await classService.getClassSchedule(req.body.id);
+      if (!schedules) return res.status(404).json({ error: 'schedules not found' });
+      res.json(schedules);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 
 };
