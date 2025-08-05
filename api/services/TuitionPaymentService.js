@@ -1,235 +1,317 @@
+// api/services/tuitionPaymentService.js
 const TuitionPayment = require('../models/TuitionPayment');
-const knex = require('../config/database');
+const Student = require('../models/Student');
+const Archive = require('../models/Archive');
+const { db } = require('../../config/db');
 
-class TuitionPaymentService {
-  static async getAllPayments(filters = {}, pagination = {}) {
-    try {
-      const { page = 1, limit = 10 } = pagination;
-      const offset = (page - 1) * limit;
+module.exports = {
+    async createTuitionPayment(paymentData) {
+        const { db } = require('../../config/db');
 
-      let countQuery = knex('tuition_payments');
-      if (filters.student_id) {
-        countQuery = countQuery.where('student_id', filters.student_id);
-      }
-      if (filters.payment_method) {
-        countQuery = countQuery.where('payment_method', filters.payment_method);
-      }
-      if (filters.date_from) {
-        countQuery = countQuery.where('payment_date', '>=', filters.date_from);
-      }
-      if (filters.date_to) {
-        countQuery = countQuery.where('payment_date', '<=', filters.date_to);
-      }
+        return await db.transaction(async (trx) => {
+            // Validate student exists
+            const student = await db('students')
+                .where({ id: paymentData.student_id })
+                .first()
+                .transacting(trx);
+            if (!student) {
+                throw new Error('Student not found');
+            }
 
-      const totalCount = await countQuery.count('id as count').first();
-      const total = parseInt(totalCount.count);
+            // Create the payment
+            const payment = await db('tuition_payments')
+                .insert(paymentData)
+                .returning('*')
+                .transacting(trx);
 
-      const payments = await TuitionPayment.findAll(filters);
-      const paginatedPayments = payments.slice(offset, offset + limit);
+            // Update archive if archive_id is provided
+            if (paymentData.archive_id) {
+                const archive = await db('archives')
+                    .where({ id: paymentData.archive_id })
+                    .first()
+                    .transacting(trx);
+                if (archive) {
+                    const newRemainingTuition = Math.max(
+                        0,
+                        archive.remaining_tuition - paymentData.amount
+                    );
+                    await db('archives')
+                        .where({ id: paymentData.archive_id })
+                        .update({ remaining_tuition: newRemainingTuition })
+                        .transacting(trx);
+                }
+            }
 
-      return {
-        data: paginatedPayments,
-        pagination: {
-          current_page: page,
-          per_page: limit,
-          total: total,
-          total_pages: Math.ceil(total / limit),
-        },
-      };
-    } catch (error) {
-      throw new Error(`Error fetching payments: ${error.message}`);
-    }
-  }
+            return payment[0];
+        });
+    },
 
-  static async getPaymentById(id) {
-    try {
-      const payment = await TuitionPayment.findById(id);
-      if (!payment) {
-        throw new Error('Payment not found');
-      }
-      return payment;
-    } catch (error) {
-      throw new Error(`Error fetching payment: ${error.message}`);
-    }
-  }
+    async getTuitionPayment(id) {
+        return await TuitionPayment.findById(id);
+    },
 
-  static async createPayment(paymentData, createdBy) {
-    const transaction = await knex.transaction();
+    async getAllTuitionPayments(filters = {}) {
+        return await TuitionPayment.findAll(filters);
+    },
 
-    try {
-      const student = await transaction('students')
-        .where('id', paymentData.student_id)
-        .first();
-      if (!student) {
-        throw new Error('Student not found');
-      }
+    async updateTuitionPayment(id, updates) {
+        const { db } = require('../../config/db');
 
-      if (paymentData.archive_id) {
-        const archive = await transaction('archive')
-          .where('id', paymentData.archive_id)
-          .first();
-        if (!archive) {
-          throw new Error('Archive record not found');
+        return await db.transaction(async (trx) => {
+            const existingPayment = await db('tuition_payments')
+                .where({ id })
+                .first()
+                .transacting(trx);
+            if (!existingPayment) {
+                throw new Error('Payment not found');
+            }
+
+            // If amount is being updated and there's an archive_id, adjust the archive
+            if (updates.amount && existingPayment.archive_id) {
+                const archive = await db('archives')
+                    .where({ id: existingPayment.archive_id })
+                    .first()
+                    .transacting(trx);
+                if (archive) {
+                    // Reverse the old payment and apply the new one
+                    const amountDifference =
+                        updates.amount - existingPayment.amount;
+                    const newRemainingTuition = Math.max(
+                        0,
+                        archive.remaining_tuition - amountDifference
+                    );
+                    await db('archives')
+                        .where({ id: existingPayment.archive_id })
+                        .update({ remaining_tuition: newRemainingTuition })
+                        .transacting(trx);
+                }
+            }
+
+            const updatedPayment = await db('tuition_payments')
+                .where({ id })
+                .update(updates)
+                .returning('*')
+                .transacting(trx);
+
+            return updatedPayment[0];
+        });
+    },
+
+    async deleteTuitionPayment(id) {
+        const { db } = require('../../config/db');
+
+        return await db.transaction(async (trx) => {
+            const payment = await db('tuition_payments')
+                .where({ id })
+                .first()
+                .transacting(trx);
+            if (!payment) {
+                return false;
+            }
+
+            // If there's an archive_id, restore the amount to remaining_tuition
+            if (payment.archive_id) {
+                const archive = await db('archives')
+                    .where({ id: payment.archive_id })
+                    .first()
+                    .transacting(trx);
+                if (archive) {
+                    const newRemainingTuition =
+                        archive.remaining_tuition + payment.amount;
+                    await db('archives')
+                        .where({ id: payment.archive_id })
+                        .update({ remaining_tuition: newRemainingTuition })
+                        .transacting(trx);
+                }
+            }
+
+            const result = await db('tuition_payments')
+                .where({ id })
+                .del()
+                .transacting(trx);
+            return result > 0;
+        });
+    },
+
+    async getPaymentsByStudent(studentId) {
+        return await TuitionPayment.findByStudentId(studentId);
+    },
+
+    async getTotalAmountByStudent(studentId) {
+        return await TuitionPayment.getTotalAmountByStudent(studentId);
+    },
+
+    async getPaymentStats(filters = {}) {
+        return await TuitionPayment.getPaymentStats(filters);
+    },
+
+    async verifyPayment(paymentId, verifierId) {
+        return await TuitionPayment.update(paymentId, {
+            verified_by: verifierId,
+        });
+    },
+
+    async getStudentBalance(studentId) {
+        const { db } = require('../../config/db');
+
+        // Get total paid amount
+        const totalPaid = await this.getTotalAmountByStudent(studentId);
+
+        // Get total tuition from current archive
+        const currentArchive = await db('archives')
+            .join(
+                'academic_years',
+                'archives.academic_year_id',
+                'academic_years.id'
+            )
+            .where('archives.student_id', studentId)
+            .where('academic_years.end_year', '>=', new Date())
+            .orderBy('academic_years.start_year', 'desc')
+            .first();
+
+        const remainingTuition = currentArchive
+            ? currentArchive.remaining_tuition
+            : 0;
+        const totalTuition = currentArchive
+            ? totalPaid + remainingTuition
+            : totalPaid;
+
+        return {
+            student_id: studentId,
+            total_tuition: totalTuition,
+            total_paid: totalPaid,
+            remaining_balance: remainingTuition,
+            payment_percentage:
+                totalTuition > 0
+                    ? ((totalPaid / totalTuition) * 100).toFixed(2)
+                    : 0,
+        };
+    },
+
+    async bulkCreatePayments(payments) {
+        const { db } = require('../../config/db');
+
+        return await db.transaction(async (trx) => {
+            const results = [];
+
+            for (const paymentData of payments) {
+                // Validate student exists
+                const student = await db('students')
+                    .where({ id: paymentData.student_id })
+                    .first()
+                    .transacting(trx);
+                if (!student) {
+                    throw new Error(
+                        `Student with ID ${paymentData.student_id} not found`
+                    );
+                }
+
+                // Create the payment
+                const payment = await db('tuition_payments')
+                    .insert(paymentData)
+                    .returning('*')
+                    .transacting(trx);
+
+                // Update archive if archive_id is provided
+                if (paymentData.archive_id) {
+                    const archive = await db('archives')
+                        .where({ id: paymentData.archive_id })
+                        .first()
+                        .transacting(trx);
+                    if (archive) {
+                        const newRemainingTuition = Math.max(
+                            0,
+                            archive.remaining_tuition - paymentData.amount
+                        );
+                        await db('archives')
+                            .where({ id: paymentData.archive_id })
+                            .update({ remaining_tuition: newRemainingTuition })
+                            .transacting(trx);
+                    }
+                }
+
+                results.push(payment[0]);
+            }
+
+            return results;
+        });
+    },
+
+    async getPaymentsByDateRange(startDate, endDate) {
+        const { db } = require('../../config/db');
+
+        return await db('tuition_payments')
+            .select(
+                'tuition_payments.*',
+                'students.user_id as student_user_id',
+                'users.name as student_name'
+            )
+            .leftJoin('students', 'tuition_payments.student_id', 'students.id')
+            .leftJoin('users', 'students.user_id', 'users.id')
+            .where('tuition_payments.payment_date', '>=', startDate)
+            .where('tuition_payments.payment_date', '<=', endDate)
+            .orderBy('tuition_payments.payment_date', 'desc');
+    },
+
+    async getOutstandingPayments() {
+        const { db } = require('../../config/db');
+
+        return await db('archives')
+            .select(
+                'archives.student_id',
+                'archives.remaining_tuition',
+                'users.name as student_name',
+                'users.email as student_email',
+                'users.phone as student_phone',
+                'academic_years.start_year',
+                'academic_years.end_year'
+            )
+            .join('students', 'archives.student_id', 'students.id')
+            .join('users', 'students.user_id', 'users.id')
+            .join(
+                'academic_years',
+                'archives.academic_year_id',
+                'academic_years.id'
+            )
+            .where('archives.remaining_tuition', '>', 0)
+            .orderBy('archives.remaining_tuition', 'desc');
+    },
+
+    async getMonthlyPaymentReport(year, month) {
+        const { db } = require('../../config/db');
+
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        return await db('tuition_payments')
+            .select(
+                db.raw('DATE(payment_date) as payment_date'),
+                db.raw('SUM(amount) as daily_total'),
+                db.raw('COUNT(*) as payment_count')
+            )
+            .where('payment_date', '>=', startDate)
+            .where('payment_date', '<=', endDate)
+            .groupBy(db.raw('DATE(payment_date)'))
+            .orderBy('payment_date');
+    },
+
+    async getPaymentMethodStats(filters = {}) {
+        const { db } = require('../../config/db');
+
+        let query = db('tuition_payments')
+            .select('payment_method')
+            .sum('amount as total_amount')
+            .count('id as payment_count')
+            .avg('amount as average_amount')
+            .groupBy('payment_method');
+
+        if (filters.date_from) {
+            query = query.where('payment_date', '>=', filters.date_from);
         }
-      }
-
-      const paymentToCreate = {
-        ...paymentData,
-        verified_by: createdBy,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
-
-      const [paymentId] = await transaction('tuition_payments')
-        .insert(paymentToCreate)
-        .returning('id');
-
-      if (paymentData.archive_id) {
-        await transaction('archive')
-          .where('id', paymentData.archive_id)
-          .decrement('remaining_tuition', paymentData.amount);
-      }
-
-      await transaction.commit();
-
-      return await this.getPaymentById(paymentId);
-    } catch (error) {
-      await transaction.rollback();
-      throw new Error(`Error creating payment: ${error.message}`);
-    }
-  }
-
-  static async updatePayment(id, updateData, updatedBy) {
-    const transaction = await knex.transaction();
-
-    try {
-      const existingPayment = await transaction('tuition_payments')
-        .where('id', id)
-        .first();
-      if (!existingPayment) {
-        throw new Error('Payment not found');
-      }
-
-      if (
-        updateData.archive_id &&
-        updateData.archive_id !== existingPayment.archive_id
-      ) {
-        if (existingPayment.archive_id) {
-          await transaction('archive')
-            .where('id', existingPayment.archive_id)
-            .increment('remaining_tuition', existingPayment.amount);
+        if (filters.date_to) {
+            query = query.where('payment_date', '<=', filters.date_to);
         }
 
-        if (updateData.archive_id) {
-          await transaction('archive')
-            .where('id', updateData.archive_id)
-            .decrement(
-              'remaining_tuition',
-              updateData.amount || existingPayment.amount
-            );
-        }
-      }
-
-      if (
-        updateData.amount &&
-        updateData.amount !== existingPayment.amount &&
-        existingPayment.archive_id
-      ) {
-        const amountDifference = updateData.amount - existingPayment.amount;
-        await transaction('archive')
-          .where('id', existingPayment.archive_id)
-          .decrement('remaining_tuition', amountDifference);
-      }
-
-      const paymentToUpdate = {
-        ...updateData,
-        verified_by: updatedBy,
-        updated_at: new Date(),
-      };
-
-      await transaction('tuition_payments')
-        .where('id', id)
-        .update(paymentToUpdate);
-
-      await transaction.commit();
-
-      return await this.getPaymentById(id);
-    } catch (error) {
-      await transaction.rollback();
-      throw new Error(`Error updating payment: ${error.message}`);
-    }
-  }
-
-  static async deletePayment(id) {
-    const transaction = await knex.transaction();
-
-    try {
-      const payment = await transaction('tuition_payments')
-        .where('id', id)
-        .first();
-      if (!payment) {
-        throw new Error('Payment not found');
-      }
-
-      if (payment.archive_id) {
-        await transaction('archive')
-          .where('id', payment.archive_id)
-          .increment('remaining_tuition', payment.amount);
-      }
-
-      const result = await transaction('tuition_payments')
-        .where('id', id)
-        .del();
-      await transaction.commit();
-
-      return result > 0;
-    } catch (error) {
-      await transaction.rollback();
-      throw new Error(`Error deleting payment: ${error.message}`);
-    }
-  }
-
-  static async getStudentPayments(studentId) {
-    try {
-      const payments = await TuitionPayment.findByStudentId(studentId);
-      const totalAmount = await TuitionPayment.getTotalAmountByStudent(
-        studentId
-      );
-
-      return {
-        payments,
-        total_amount: totalAmount,
-        payment_count: payments.length,
-      };
-    } catch (error) {
-      throw new Error(`Error fetching student payments: ${error.message}`);
-    }
-  }
-
-  static async getPaymentStatistics(filters = {}) {
-    try {
-      const stats = await TuitionPayment.getPaymentStats(filters);
-
-      const totalAmount = stats.reduce(
-        (sum, stat) => sum + parseFloat(stat.total_amount),
-        0
-      );
-      const totalPayments = stats.reduce(
-        (sum, stat) => sum + parseInt(stat.payment_count),
-        0
-      );
-
-      return {
-        summary: {
-          total_amount: totalAmount,
-          total_payments: totalPayments,
-        },
-        by_method: stats,
-      };
-    } catch (error) {
-      throw new Error(`Error fetching payment statistics: ${error.message}`);
-    }
-  }
-}
-
-module.exports = TuitionPaymentService;
+        return await query;
+    },
+};
