@@ -23,5 +23,7 @@ module.exports = {
   async getStudentsInClass(id) {
     return await Class.getStudentsInClass(id);
   },
- 
+  async getClassSchedule(id) {
+    return await Class.getClassSchedule(id);
+  },
 };
