@@ -87,7 +87,8 @@ exports.seed = async function (knex) {
     { name: 'get_all_classes' },
     { name: 'get_students_in_class' },
     { name: 'get_class' },
-    { name: 'update_class' },
+    { name: 'update_class' },   
+    { name: 'get_class_schedule' },
     { name: 'delete_class' },
     // behavior
     { name: 'get_all_behaviors' },
@@ -112,6 +113,9 @@ exports.seed = async function (knex) {
     { name: 'get_all_exam' },
     { name: 'get_exam_questions' },
     { name: 'get_exam' },
+    { name: 'get_all_preexam_of_semester' },
+    { name: 'get_all_next_exam' },
+    { name: 'get_all_semesters_by_subject_fot_preexams' },
     { name: 'update_exam' },
     { name: 'delete_exam' },
     // question

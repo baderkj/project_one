@@ -26,6 +26,12 @@ router.get(
   classController.getStudentsInClass
 );
 router.get(
+  '/schedule',
+  authMiddleware,
+  hasPermission('get_class_schedule'),
+  classController.getClassSchedule
+);
+router.get(
   '/:id',
   authMiddleware,
   hasPermission('get_class'),
