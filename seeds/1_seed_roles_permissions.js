@@ -9,7 +9,10 @@ exports.seed = async function (knex) {
     await knex('roles').del();
 
     const [admin] = await knex('roles')
-        .insert([{ name: 'admin' }, { name: 'teacher' }, { name: 'student' }])
+        .insert([{ name: 'admin' }, { name: 'teacher' }])
+        .returning('*');
+    const [student] = await knex('roles')
+        .insert([{ name: 'student' }])
         .returning('*');
 
   const permissionsList = [
@@ -208,4 +211,10 @@ exports.seed = async function (knex) {
     ];
 
     await knex('role_permissions').insert(rolePermissions);
+
+    const rolePermissions1 = [
+        ...permissions.map((p) => ({ role_id: student.id, permission_id: p.id })),
+    ];
+
+    await knex('role_permissions').insert(rolePermissions1);
 };

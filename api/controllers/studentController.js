@@ -106,7 +106,11 @@ module.exports = {
   ,
   async getStudentSubjects(req, res) {
     try {
-     const subjects= await studentService.getSubjects(req.body.id);
+     const userId = req.user.id;
+     const student = await db('students')
+    .select('*')
+    .where({ user_id: userId });
+     const subjects= await studentService.getSubjects(student[0].id);
       if (!subjects) return res.status(404).json({ error: 'Student not found' });
       res.json(subjects);
     } catch (error) {

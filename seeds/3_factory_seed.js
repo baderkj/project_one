@@ -231,8 +231,8 @@ exports.seed = async function (knex) {
 
     console.log('seeding schedules');
     const schedules = [];
-    const usedClassKeys = new Set(); // for class_id + day_id + period_id
-    const usedSubjectKeys = new Set(); // for subject_id + day_id + period_id
+    const usedClassKeys = new Set();
+    const usedSubjectKeys = new Set();
     let scheduleAttempts = 0;
 
     while (schedules.length < 10 && scheduleAttempts < 200) {
@@ -249,11 +249,9 @@ exports.seed = async function (knex) {
             faker.helpers.arrayElement(periodIds).id ||
             faker.helpers.arrayElement(periodIds);
 
-        // Check both unique constraints
         const classKey = `${class_id}_${day_id}_${period_id}`;
         const subjectKey = `${subject_id}_${day_id}_${period_id}`;
 
-        // Only add if both constraints are satisfied
         if (!usedClassKeys.has(classKey) && !usedSubjectKeys.has(subjectKey)) {
             schedules.push({
                 class_id,
@@ -274,7 +272,10 @@ exports.seed = async function (knex) {
     console.log('seeding exams');
     const exams = [];
     for (let i = 0; i < 10; i++) {
-        const startDateTime = faker.date.future();
+        const startDateTime = faker.date.between({
+            from: '2020-01-01T00:00:00.000Z',
+            to: '2030-01-01T00:00:00.000Z',
+        });
         const endDateTime = new Date(startDateTime);
         endDateTime.setHours(startDateTime.getHours() + 2);
 
@@ -329,6 +330,11 @@ exports.seed = async function (knex) {
     }
     const optionIds = await knex('options').insert(options).returning('id');
 
+    // Assign database IDs to options
+    for (let i = 0; i < options.length; i++) {
+        options[i].id = optionIds[i].id;
+    }
+
     console.log('seeding exam_question');
     const examQuestions = [];
     for (const examId of examIds) {
@@ -375,14 +381,10 @@ exports.seed = async function (knex) {
 
     console.log('seeding answers');
     const answers = [];
-    for (const attemptId of examAttemptIds.slice(0, 10)) {
-        // Only seed answers for some attempts
+    for (let i = 0; i < Math.min(10, examAttemptIds.length); i++) {
+        const attemptId = examAttemptIds[i];
         const aId = attemptId.id || attemptId;
-        const attempt = examAttempts.find(
-            (ea) =>
-                (ea.id && ea.id === aId) ||
-                examAttempts.indexOf(ea) === examAttemptIds.indexOf(attemptId)
-        );
+        const attempt = examAttempts[i];
 
         if (attempt) {
             const examId = attempt.exam_id;
@@ -391,7 +393,6 @@ exports.seed = async function (knex) {
             );
 
             for (const examQuestion of relatedExamQuestions.slice(0, 3)) {
-                // Answer first 3 questions
                 const relatedOptions = options.filter(
                     (opt) => opt.question_id === examQuestion.question_id
                 );
@@ -401,9 +402,7 @@ exports.seed = async function (knex) {
 
                     answers.push({
                         question_id: examQuestion.question_id,
-                        option_id:
-                            selectedOption.id ||
-                            options.indexOf(selectedOption) + 1,
+                        option_id: selectedOption.id,
                         exam_attempt_id: aId,
                         mark_awarded: selectedOption.is_correct
                             ? examQuestion.mark

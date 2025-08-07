@@ -138,7 +138,7 @@ module.exports = {
                     'users.phone',
                     'users.birth_date'
                 );
-            const role = await roleService.getRoleById({ id: user[0].role_id });
+            const role = await roleService.getRoleById(user[0].role_id);
             if (role[0].name === 'student') {
                 user = await db('users')
                     .join('students', 'students.user_id', 'users.id')
