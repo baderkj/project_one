@@ -1,21 +1,53 @@
 const classService = require('../services/classService');
-
+const { db } = require('../../config/db');
 const {  validationResult } = require('express-validator');
 
-const bcrypt=require('bcrypt-nodejs');
 module.exports = {
 
-  async createClass(req, res) {
+  async createClass(req,res) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty())
-      {
-          return res.status(400).json({ errors: errors.array() });
-      } 
-      const Class = await classService.createClass(req.body);
-      res.status(201).json(Class);
+      const classData=req.body;
+      // Validate required fields first
+      if (!(classData?.class_name || classData?.floor_number === undefined)) {
+        throw new Error('class_name and floor_number are required');
+      }
+  
+      return await db.transaction(async trx => {
+        // 1. Create the class with validated data
+        const [classId] = await trx('classes')
+          .insert({
+            class_name: classData.class_name,
+            floor_number: classData.floor_number,
+            // Include other required fields as needed
+          })
+          .returning('id');
+          
+        // 2. Get all days and periods from database
+        const days = await trx('days').select('id').orderBy('id');
+        const periods = await trx('periods').select('id',).orderBy('start_time');
+          console.log(classId,days,periods)
+        // 3. Generate schedule slots
+        const scheduleSlots = days.flatMap(day => 
+          periods.map(period => ({
+            class_id: classId.id,
+            day_id: day.id,
+            period_id: period.id,
+            subject_id: null
+          }))
+        );
+  
+        // 4. Insert schedule slots
+        await trx('schedules').insert(scheduleSlots);
+  
+        res.json({
+          success: true,
+          classId,
+          slotsCreated: scheduleSlots.length
+        });
+      });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(500).json({ error: error.message });
+     
     }
   },
 

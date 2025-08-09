@@ -172,10 +172,10 @@ module.exports = {
             const student = await db('students')
                 .select('*')
                 .where({ user_id: userId });
-
+          console.log(student,userId)
             if (!student)
                 return res.status(404).json({ error: 'Student Not found' });
-            const schedules = await studentService.getStudentSchedule(userId);
+            const schedules = await studentService.getStudentSchedule(student[0].id);
             if (!schedules)
                 return res.status(404).json({ error: 'Class not found' });
             res.json(schedules);

@@ -64,13 +64,13 @@ class Student {
       .join('students as st', 'st.class_id', 'sc.class_id')
       .join('days as d', 'd.id', 'sc.day_id')
       .join('periods as p', 'p.id', 'sc.period_id')
-      .join('subjects as su', 'su.id', 'sc.subject_id')
+      .leftJoin('subjects as su', 'su.id', 'sc.subject_id')
       .where('st.id', id)
       .select('p.id as period_id', 'p.start_time', 'p.end_time', 'd.id as day_id', 'd.name as day_name', 'su.name as subject_name')
       .orderBy('d.id', 'asc') // Ensure days are ordered
       .orderBy('p.start_time', 'asc'); 
       
-    
+    console.log(scheduleEntries)
 
     // Group by day
     const scheduleByDay = {};
