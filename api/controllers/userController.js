@@ -1,6 +1,7 @@
 const userService = require('../services/userService');
 const studentService = require('../services/studentService');
-
+const teacherService = require('../services/teacherService');
+const blackListTokenService = require('../services/blackListTokenService');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt-nodejs');
 const { db } = require('../../config/db');
@@ -272,7 +273,7 @@ module.exports = {
 
     async signOut(req, res) {
         try {
-            const token = req.headers.authorization?.split(' ')[1];
+            const token = req.headers.authorization?.split(' ')[1] || req.headers.token;;
             if (!token) {
                 return res.status(400).json({ error: 'No token provided' });
             }
@@ -282,7 +283,7 @@ module.exports = {
             const expiresAt = new Date(decoded.exp * 1000);
 
             // Add token to blacklist
-            await BlacklistedToken.create(token, expiresAt);
+            await blackListTokenService.createBlacklistedToken(token, expiresAt);
 
             res.json({ message: 'Successfully signed out' });
         } catch (error) {
