@@ -1,8 +1,8 @@
 const Question = require('../models/Question');
 
 module.exports = {
-  async createQuestion(QuestionData) {
-    return await Question.create(QuestionData);
+  async createQuestion(QuestionData,trx=null) {
+    return await Question.create(QuestionData,trx);
   },
 
   async getQuestion(id) {

@@ -1,8 +1,8 @@
 const Option= require('../models/Option');
 
 module.exports = {
-  async createOption(OptionData) {
-    return await Option.create(OptionData);
+  async createOption(OptionData,trx=null) {
+    return await Option.create(OptionData,trx);
   },
 
   async getOption(id) {

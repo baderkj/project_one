@@ -1,6 +1,7 @@
 const { db } = require('../../config/db');
 const examService = require('../services/examService');
 const qustionService = require('../services/qustionService');
+const optionService = require('../services/optionService');
 const { validationResult, body } = require('express-validator');
 
 module.exports = {
@@ -10,8 +11,23 @@ module.exports = {
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const Question = await qustionService.createQuestion(req.body);
-      res.status(201).json(Question);
+      const {question_text,subject_id,type,options}=req.body;
+      const result = await db.transaction(async (trx) => {
+
+        const Question = await qustionService.createQuestion({question_text,subject_id,type},trx);
+
+        const addedOptions= options.map((option)=>({text:option.text,
+          is_correct:option.is_correct,question_id:Question[0].id
+        }));
+
+        const Options= await optionService.createOption(addedOptions,trx);
+        return {Question,Options};
+      });
+     
+     
+      
+   
+      res.status(201).json(result);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

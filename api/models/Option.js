@@ -1,8 +1,10 @@
 const {db} = require('../../config/db');
 
 class Option {
-  static async create(OptionData) {
-    return await db('options').insert(OptionData).returning('*');
+  static async create(OptionData,trx=null) {
+    const query =db('options');
+    if (trx) query.transacting(trx);
+    return await query.insert(OptionData).returning('*');
   }
 
   static async findById(id) {
