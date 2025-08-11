@@ -204,6 +204,13 @@ exports.seed = async function (knex) {
         // permissions
         { name: 'create_permission' },
         { name: 'get_all_permissions' },
+         // teachers_subjects
+        { name: 'create_teachers_subjects' },
+        { name: 'get_all_teachers_subjects' },
+        { name: 'get_teachers_subjects' },
+        { name: 'update_teachers_subjects' },
+        { name: 'delete_teachers_subjects' },
+
     ];
     const permissions = await knex('permissions')
         .insert(permissionsList)

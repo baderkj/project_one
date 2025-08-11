@@ -7,12 +7,12 @@ exports.up = function (knex) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.text('resources').nullable();
-    table
-      .integer('teacher_id')
-      .unsigned()
-      .references('id')
-      .inTable('teachers')
-      .onDelete('SET NULL');
+    // table
+    //   .integer('teacher_id')
+    //   .unsigned()
+    //   .references('id')
+    //   .inTable('teachers')
+    //   .onDelete('SET NULL');
     table
       .integer('curriculum_id')
       .unsigned()

@@ -219,9 +219,9 @@ exports.seed = async function (knex) {
         subjects.push({
             name: subjectNames[i],
             resources: faker.internet.url(),
-            teacher_id:
-                faker.helpers.arrayElement(teacherIds).id ||
-                faker.helpers.arrayElement(teacherIds),
+            // teacher_id:
+            //     faker.helpers.arrayElement(teacherIds).id ||
+            //     faker.helpers.arrayElement(teacherIds),
             curriculum_id:
                 faker.helpers.arrayElement(curriculumIds).id ||
                 faker.helpers.arrayElement(curriculumIds),
@@ -229,237 +229,237 @@ exports.seed = async function (knex) {
     }
     const subjectIds = await knex('subjects').insert(subjects).returning('id');
 
-    console.log('seeding schedules');
-    const schedules = [];
-    const usedClassKeys = new Set();
-    const usedSubjectKeys = new Set();
-    let scheduleAttempts = 0;
+    // console.log('seeding schedules');
+    // const schedules = [];
+    // const usedClassKeys = new Set();
+    // const usedSubjectKeys = new Set();
+    // let scheduleAttempts = 0;
 
-    while (schedules.length < 10 && scheduleAttempts < 200) {
-        const class_id =
-            faker.helpers.arrayElement(classIds).id ||
-            faker.helpers.arrayElement(classIds);
-        const subject_id =
-            faker.helpers.arrayElement(subjectIds).id ||
-            faker.helpers.arrayElement(subjectIds);
-        const day_id =
-            faker.helpers.arrayElement(dayIds).id ||
-            faker.helpers.arrayElement(dayIds);
-        const period_id =
-            faker.helpers.arrayElement(periodIds).id ||
-            faker.helpers.arrayElement(periodIds);
+    // while (schedules.length < 10 && scheduleAttempts < 200) {
+    //     const class_id =
+    //         faker.helpers.arrayElement(classIds).id ||
+    //         faker.helpers.arrayElement(classIds);
+    //     const subject_id =
+    //         faker.helpers.arrayElement(subjectIds).id ||
+    //         faker.helpers.arrayElement(subjectIds);
+    //     const day_id =
+    //         faker.helpers.arrayElement(dayIds).id ||
+    //         faker.helpers.arrayElement(dayIds);
+    //     const period_id =
+    //         faker.helpers.arrayElement(periodIds).id ||
+    //         faker.helpers.arrayElement(periodIds);
 
-        const classKey = `${class_id}_${day_id}_${period_id}`;
-        const subjectKey = `${subject_id}_${day_id}_${period_id}`;
+    //     const classKey = `${class_id}_${day_id}_${period_id}`;
+    //     const subjectKey = `${subject_id}_${day_id}_${period_id}`;
 
-        if (!usedClassKeys.has(classKey) && !usedSubjectKeys.has(subjectKey)) {
-            schedules.push({
-                class_id,
-                subject_id,
-                day_id,
-                period_id,
-            });
-            usedClassKeys.add(classKey);
-            usedSubjectKeys.add(subjectKey);
-        }
-        scheduleAttempts++;
-    }
+    //     if (!usedClassKeys.has(classKey) && !usedSubjectKeys.has(subjectKey)) {
+    //         schedules.push({
+    //             class_id,
+    //             subject_id,
+    //             day_id,
+    //             period_id,
+    //         });
+    //         usedClassKeys.add(classKey);
+    //         usedSubjectKeys.add(subjectKey);
+    //     }
+    //     scheduleAttempts++;
+    // }
 
-    const scheduleIds = await knex('schedules')
-        .insert(schedules)
-        .returning('id');
+    // const scheduleIds = await knex('schedules')
+    //     .insert(schedules)
+    //     .returning('id');
 
-    console.log('seeding exams');
-    const exams = [];
-    for (let i = 0; i < 10; i++) {
-        const startDateTime = faker.date.between({
-            from: '2020-01-01T00:00:00.000Z',
-            to: '2030-01-01T00:00:00.000Z',
-        });
-        const endDateTime = new Date(startDateTime);
-        endDateTime.setHours(startDateTime.getHours() + 2);
+    // console.log('seeding exams');
+    // const exams = [];
+    // for (let i = 0; i < 10; i++) {
+    //     const startDateTime = faker.date.between({
+    //         from: '2020-01-01T00:00:00.000Z',
+    //         to: '2030-01-01T00:00:00.000Z',
+    //     });
+    //     const endDateTime = new Date(startDateTime);
+    //     endDateTime.setHours(startDateTime.getHours() + 2);
 
-        exams.push({
-            subject_id:
-                faker.helpers.arrayElement(subjectIds).id ||
-                faker.helpers.arrayElement(subjectIds),
-            semester_id:
-                faker.helpers.arrayElement(semesterIds).id ||
-                faker.helpers.arrayElement(semesterIds),
-            title: faker.lorem.words(3),
-            description: faker.lorem.sentence(),
-            time_limit: faker.number.int({ min: 60, max: 180 }),
-            total_mark: 100,
-            passing_mark: 50,
-            start_datetime: startDateTime.toISOString(),
-            end_datetime: endDateTime.toISOString(),
-            announced: faker.datatype.boolean(),
-        });
-    }
-    const examIds = await knex('exams').insert(exams).returning('id');
+    //     exams.push({
+    //         subject_id:
+    //             faker.helpers.arrayElement(subjectIds).id ||
+    //             faker.helpers.arrayElement(subjectIds),
+    //         semester_id:
+    //             faker.helpers.arrayElement(semesterIds).id ||
+    //             faker.helpers.arrayElement(semesterIds),
+    //         title: faker.lorem.words(3),
+    //         description: faker.lorem.sentence(),
+    //         time_limit: faker.number.int({ min: 60, max: 180 }),
+    //         total_mark: 100,
+    //         passing_mark: 50,
+    //         start_datetime: startDateTime.toISOString(),
+    //         end_datetime: endDateTime.toISOString(),
+    //         announced: faker.datatype.boolean(),
+    //     });
+    // }
+    // const examIds = await knex('exams').insert(exams).returning('id');
 
-    console.log('seeding questions');
-    const questions = [];
-    for (let i = 0; i < 30; i++) {
-        questions.push({
-            subject_id:
-                faker.helpers.arrayElement(subjectIds).id ||
-                faker.helpers.arrayElement(subjectIds),
-            question_text: faker.lorem.sentence() + '?',
-            type: faker.helpers.arrayElement(['mcq', 'true_false']),
-        });
-    }
-    const questionIds = await knex('questions')
-        .insert(questions)
-        .returning('id');
+    // console.log('seeding questions');
+    // const questions = [];
+    // for (let i = 0; i < 30; i++) {
+    //     questions.push({
+    //         subject_id:
+    //             faker.helpers.arrayElement(subjectIds).id ||
+    //             faker.helpers.arrayElement(subjectIds),
+    //         question_text: faker.lorem.sentence() + '?',
+    //         type: faker.helpers.arrayElement(['mcq', 'true_false']),
+    //     });
+    // }
+    // const questionIds = await knex('questions')
+    //     .insert(questions)
+    //     .returning('id');
 
-    console.log('seeding options');
-    const options = [];
-    for (const questionId of questionIds) {
-        const qId = questionId.id || questionId;
-        const numOptions = faker.number.int({ min: 2, max: 4 });
-        const correctIndex = faker.number.int({ min: 0, max: numOptions - 1 });
+    // console.log('seeding options');
+    // const options = [];
+    // for (const questionId of questionIds) {
+    //     const qId = questionId.id || questionId;
+    //     const numOptions = faker.number.int({ min: 2, max: 4 });
+    //     const correctIndex = faker.number.int({ min: 0, max: numOptions - 1 });
 
-        for (let i = 0; i < numOptions; i++) {
-            options.push({
-                question_id: qId,
-                text: faker.lorem.words(3),
-                is_correct: i === correctIndex,
-            });
-        }
-    }
-    const optionIds = await knex('options').insert(options).returning('id');
+    //     for (let i = 0; i < numOptions; i++) {
+    //         options.push({
+    //             question_id: qId,
+    //             text: faker.lorem.words(3),
+    //             is_correct: i === correctIndex,
+    //         });
+    //     }
+    // }
+    // const optionIds = await knex('options').insert(options).returning('id');
 
-    // Assign database IDs to options
-    for (let i = 0; i < options.length; i++) {
-        options[i].id = optionIds[i].id;
-    }
+    // // Assign database IDs to options
+    // for (let i = 0; i < options.length; i++) {
+    //     options[i].id = optionIds[i].id;
+    // }
 
-    console.log('seeding exam_question');
-    const examQuestions = [];
-    for (const examId of examIds) {
-        const eId = examId.id || examId;
-        const numQuestions = faker.number.int({ min: 5, max: 10 });
-        const selectedQuestions = faker.helpers.arrayElements(
-            questionIds,
-            numQuestions
-        );
+    // console.log('seeding exam_question');
+    // const examQuestions = [];
+    // for (const examId of examIds) {
+    //     const eId = examId.id || examId;
+    //     const numQuestions = faker.number.int({ min: 5, max: 10 });
+    //     const selectedQuestions = faker.helpers.arrayElements(
+    //         questionIds,
+    //         numQuestions
+    //     );
 
-        for (const questionId of selectedQuestions) {
-            const qId = questionId.id || questionId;
-            examQuestions.push({
-                exam_id: eId,
-                question_id: qId,
-                mark: faker.number.int({ min: 5, max: 15 }),
-            });
-        }
-    }
-    const examQuestionIds = await knex('exam_question')
-        .insert(examQuestions)
-        .returning('id');
+    //     for (const questionId of selectedQuestions) {
+    //         const qId = questionId.id || questionId;
+    //         examQuestions.push({
+    //             exam_id: eId,
+    //             question_id: qId,
+    //             mark: faker.number.int({ min: 5, max: 15 }),
+    //         });
+    //     }
+    // }
+    // const examQuestionIds = await knex('exam_question')
+    //     .insert(examQuestions)
+    //     .returning('id');
 
-    console.log('seeding exam_attempts');
-    const examAttempts = [];
-    for (let i = 0; i < 20; i++) {
-        const score = faker.datatype.boolean()
-            ? faker.number.int({ min: 0, max: 100 })
-            : null;
+    // console.log('seeding exam_attempts');
+    // const examAttempts = [];
+    // for (let i = 0; i < 20; i++) {
+    //     const score = faker.datatype.boolean()
+    //         ? faker.number.int({ min: 0, max: 100 })
+    //         : null;
 
-        examAttempts.push({
-            exam_id:
-                faker.helpers.arrayElement(examIds).id ||
-                faker.helpers.arrayElement(examIds),
-            student_id:
-                faker.helpers.arrayElement(studentIds).id ||
-                faker.helpers.arrayElement(studentIds),
-            score: score,
-        });
-    }
-    const examAttemptIds = await knex('exam_attempts')
-        .insert(examAttempts)
-        .returning('id');
+    //     examAttempts.push({
+    //         exam_id:
+    //             faker.helpers.arrayElement(examIds).id ||
+    //             faker.helpers.arrayElement(examIds),
+    //         student_id:
+    //             faker.helpers.arrayElement(studentIds).id ||
+    //             faker.helpers.arrayElement(studentIds),
+    //         score: score,
+    //     });
+    // }
+    // const examAttemptIds = await knex('exam_attempts')
+    //     .insert(examAttempts)
+    //     .returning('id');
 
-    console.log('seeding answers');
-    const answers = [];
-    for (let i = 0; i < Math.min(10, examAttemptIds.length); i++) {
-        const attemptId = examAttemptIds[i];
-        const aId = attemptId.id || attemptId;
-        const attempt = examAttempts[i];
+    // console.log('seeding answers');
+    // const answers = [];
+    // for (let i = 0; i < Math.min(10, examAttemptIds.length); i++) {
+    //     const attemptId = examAttemptIds[i];
+    //     const aId = attemptId.id || attemptId;
+    //     const attempt = examAttempts[i];
 
-        if (attempt) {
-            const examId = attempt.exam_id;
-            const relatedExamQuestions = examQuestions.filter(
-                (eq) => eq.exam_id === examId
-            );
+    //     if (attempt) {
+    //         const examId = attempt.exam_id;
+    //         const relatedExamQuestions = examQuestions.filter(
+    //             (eq) => eq.exam_id === examId
+    //         );
 
-            for (const examQuestion of relatedExamQuestions.slice(0, 3)) {
-                const relatedOptions = options.filter(
-                    (opt) => opt.question_id === examQuestion.question_id
-                );
-                if (relatedOptions.length > 0) {
-                    const selectedOption =
-                        faker.helpers.arrayElement(relatedOptions);
+    //         for (const examQuestion of relatedExamQuestions.slice(0, 3)) {
+    //             const relatedOptions = options.filter(
+    //                 (opt) => opt.question_id === examQuestion.question_id
+    //             );
+    //             if (relatedOptions.length > 0) {
+    //                 const selectedOption =
+    //                     faker.helpers.arrayElement(relatedOptions);
 
-                    answers.push({
-                        question_id: examQuestion.question_id,
-                        option_id: selectedOption.id,
-                        exam_attempt_id: aId,
-                        mark_awarded: selectedOption.is_correct
-                            ? examQuestion.mark
-                            : 0,
-                    });
-                }
-            }
-        }
-    }
+    //                 answers.push({
+    //                     question_id: examQuestion.question_id,
+    //                     option_id: selectedOption.id,
+    //                     exam_attempt_id: aId,
+    //                     mark_awarded: selectedOption.is_correct
+    //                         ? examQuestion.mark
+    //                         : 0,
+    //                 });
+    //             }
+    //         }
+    //     }
+    // }
 
-    if (answers.length > 0) {
-        await knex('answers').insert(answers);
-    }
+    // if (answers.length > 0) {
+    //     await knex('answers').insert(answers);
+    // }
 
-    console.log('seeding archives');
-    const archives = [];
-    const usedArchiveKeys = new Set();
+    // console.log('seeding archives');
+    // const archives = [];
+    // const usedArchiveKeys = new Set();
 
-    for (let i = 0; i < 10; i++) {
-        const studentId =
-            faker.helpers.arrayElement(studentIds).id ||
-            faker.helpers.arrayElement(studentIds);
-        const academicYearId =
-            faker.helpers.arrayElement(academicYearIds).id ||
-            faker.helpers.arrayElement(academicYearIds);
-        const key = `${studentId}_${academicYearId}`;
+    // for (let i = 0; i < 10; i++) {
+    //     const studentId =
+    //         faker.helpers.arrayElement(studentIds).id ||
+    //         faker.helpers.arrayElement(studentIds);
+    //     const academicYearId =
+    //         faker.helpers.arrayElement(academicYearIds).id ||
+    //         faker.helpers.arrayElement(academicYearIds);
+    //     const key = `${studentId}_${academicYearId}`;
 
-        if (!usedArchiveKeys.has(key)) {
-            archives.push({
-                student_id: studentId,
-                academic_year_id: academicYearId,
-                remaining_tuition: faker.number.float({
-                    min: 0,
-                    max: 5000,
-                    fractionDigits: 2,
-                }),
-            });
-            usedArchiveKeys.add(key);
-        }
-    }
-    await knex('archives').insert(archives);
+    //     if (!usedArchiveKeys.has(key)) {
+    //         archives.push({
+    //             student_id: studentId,
+    //             academic_year_id: academicYearId,
+    //             remaining_tuition: faker.number.float({
+    //                 min: 0,
+    //                 max: 5000,
+    //                 fractionDigits: 2,
+    //             }),
+    //         });
+    //         usedArchiveKeys.add(key);
+    //     }
+    // }
+    // await knex('archives').insert(archives);
 
-    console.log('seeding attendance_students');
-    const attendance = [];
-    for (let i = 0; i < 30; i++) {
-        attendance.push({
-            student_id:
-                faker.helpers.arrayElement(studentIds).id ||
-                faker.helpers.arrayElement(studentIds),
-            created_by:
-                faker.helpers.arrayElement(userIds).id ||
-                faker.helpers.arrayElement(userIds),
-            date: faker.date.recent({ days: 30 }).toISOString().split('T')[0],
-            status: faker.helpers.arrayElement(['present', 'absent', 'late']),
-        });
-    }
-    await knex('attendance_students').insert(attendance);
+    // console.log('seeding attendance_students');
+    // const attendance = [];
+    // for (let i = 0; i < 30; i++) {
+    //     attendance.push({
+    //         student_id:
+    //             faker.helpers.arrayElement(studentIds).id ||
+    //             faker.helpers.arrayElement(studentIds),
+    //         created_by:
+    //             faker.helpers.arrayElement(userIds).id ||
+    //             faker.helpers.arrayElement(userIds),
+    //         date: faker.date.recent({ days: 30 }).toISOString().split('T')[0],
+    //         status: faker.helpers.arrayElement(['present', 'absent', 'late']),
+    //     });
+    // }
+    // await knex('attendance_students').insert(attendance);
 
-    console.log('Factory seeding completed successfully!');
+    // console.log('Factory seeding completed successfully!');
 };

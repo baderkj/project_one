@@ -29,8 +29,15 @@ exports.up = function (knex) {
       .references('id')
       .inTable('periods')
       .onDelete('CASCADE');
-    table.unique(['subject_id', 'day_id', 'period_id']);
+      table
+      .integer('teacher_id')
+      .unsigned()
+      .references('id')
+      .inTable('teachers')
+      .onDelete('CASCADE');
+    // table.unique(['subject_id', 'day_id', 'period_id']);
     table.unique(['class_id', 'day_id', 'period_id']);
+    table.unique(['teacher_id','class_id', 'day_id', 'period_id']);
     table.timestamps(true, true);
   });
 };
