@@ -116,9 +116,10 @@ module.exports = {
   },
   async getSubjects(req, res) {
     try {
-      const teacher = await teacherService.getSubjects(req.body.id);
-      if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
-      res.json(teacher);
+      const teacher = await teacherService.findByUserId(req.user.id)
+      const subjects = await teacherService.getSubjects(teacher.id);
+      if (!subjects || subjects.length==0) return res.status(404).json({ error: 'Teacher subjects not found' });
+      res.json(subjects);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -138,6 +139,16 @@ module.exports = {
     }
   },
 
+  async getQuestions(req, res) {
+    try {
+      const teacher = await teacherService.findByUserId(req.user.id)
+      const questions = await teacherService.getQuestions(teacher.id);
+      if (!questions || questions.length==0) return res.status(404).json({ error: 'Teacher questions not found' });
+      res.json(questions);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 
 };
 

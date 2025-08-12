@@ -10,6 +10,8 @@ module.exports = {
     return await Teacher.findById(id);
   },
 
+ 
+
   async findByUserId(id) {
     return await Teacher.findByUserId(id);
   },
@@ -25,10 +27,16 @@ module.exports = {
   async deleteTeacher(id) {
     return await Teacher.delete(id);
   },
+
   async getSubjects(id) {
     return await Teacher.getSubjects(id);
   },
+
   async getTeacherSchedule(id) {
     return await Teacher.getTeacherSchedule(id);
+  },
+
+  async getQuestions(id) {
+    return await Teacher.getQuestions(id);
   }
 };

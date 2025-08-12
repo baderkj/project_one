@@ -19,6 +19,12 @@ router.get(
   teacherController.getAllTeachers
 );
 router.get(
+  '/questions',
+  authMiddleware,
+  // hasPermission('get_teacher_questions'),
+  teacherController.getQuestions
+);
+router.get(
   '/subjects',
   authMiddleware,
   hasPermission('get_teacher_subjects'),
@@ -27,7 +33,7 @@ router.get(
 router.get(
   '/schedule',
   authMiddleware,
-  // hasPermission('get_teacher_schedule'),
+  hasPermission('get_teacher_schedule'),
   teacherController.getTeacherSchedule
 );
 router.get(
@@ -48,5 +54,6 @@ router.delete(
   hasPermission('delete_teacher'),
   teacherController.deleteTeacher
 );
+
 
 module.exports = router;

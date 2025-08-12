@@ -19,7 +19,7 @@ class Teacher {
   static async findAll() {
     return await db('teachers').select('*') ;
   }
-
+ 
   static async update(id, updates) {
     return await db('teachers').where({ id }).update(updates).returning('*');
   }
@@ -29,7 +29,8 @@ class Teacher {
   }
   static async getSubjects(id) {
     return await db('subjects as su')
-    .where('su.teacher_id', id) 
+    .join('teachers_subjects as ts','ts.subject_id','su.id')
+    .where('ts.teacher_id', id) 
     .select('su.*');
   }
   static async getTeacherSchedule(id) {
@@ -61,6 +62,67 @@ class Teacher {
     // Convert to array format if preferred
     return Object.values(scheduleByDay);
     
+  }
+
+  static async getQuestions(id) {
+    const rows = await db('teachers as t')
+    .join('teachers_subjects as ts', 'ts.teacher_id', 't.id')
+    .join('subjects as s', 's.id', 'ts.subject_id') 
+    .join('questions as q', 'q.subject_id', 'ts.subject_id')
+    .join('options as o', 'o.question_id', 'q.id')
+    .where('ts.teacher_id', id)
+    .select(
+        's.id as subject_id',
+        's.name as subject_name',
+        'q.type',
+        'o.id as option_id',
+        'o.text as option_text',
+        'o.is_correct',
+        'q.id as question_id',
+        'q.question_text'
+    )
+    .orderBy('s.id', 'q.id'); 
+
+          
+    const subjectsMap = rows.reduce((acc, row) => {
+      const subjectId = row.subject_id;
+      
+      if (!acc[subjectId]) {
+          acc[subjectId] = {
+              subject_id: row.subject_id,
+              subject_name: row.subject_name,
+              questions: {}
+          };
+      }
+      
+
+      const questionId = row.question_id;
+      if (!acc[subjectId].questions[questionId]) {
+          acc[subjectId].questions[questionId] = {
+              question_id: row.question_id,
+              question_text: row.question_text,
+              type: row.type,
+              options: []
+          };
+      }
+    
+      acc[subjectId].questions[questionId].options.push({
+          option_id: row.option_id,
+          option_text: row.option_text,
+          is_correct: row.is_correct
+      });
+      
+      return acc;
+  }, {});
+  
+ 
+  const result = Object.values(subjectsMap).map(subject => ({
+      ...subject,
+      questions: Object.values(subject.questions)
+  }));
+  
+  return result;
+
   }
 }
 
