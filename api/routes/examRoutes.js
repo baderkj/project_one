@@ -11,7 +11,7 @@ router.post(
     examValidator,
     authMiddleware,
     hasPermission('create_exam'),
-    examController.createExam
+    examController.createExamWithQuestions
 );
 router.get(
     '/',

@@ -77,9 +77,22 @@ module.exports = {
     
             // Start transaction
             trx = await db.transaction();
-    
+            
             const student = await studentService.findByEmail(email, trx);
-           
+
+            const existingAttempt = await examAttemptService.
+            checkIfStudentTakeAnExam(student.id,exam_id);
+            
+            console.log(existingAttempt)
+        if (existingAttempt) {
+            await trx.rollback();
+            return res.status(400).json({ 
+                error: 'You have already taken this exam',
+                previous_score: existingAttempt.score,
+                previous_attempt_id: existingAttempt.id
+            });
+        }
+
             const examAttempt = await examAttemptService.createExamAttempt({
                 exam_id: exam_id,
                 student_id: student.id,

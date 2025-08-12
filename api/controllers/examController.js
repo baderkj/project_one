@@ -1,18 +1,58 @@
 const examService = require('../services/examService');
+const examQuestionService = require('../services/examQuestionService');
 const { validationResult } = require('express-validator');
 const { db } = require('../../config/db');
-const studentService = require('../services/studentService');
+
 
 module.exports = {
-    async createExam(req, res) {
+    async createExamWithQuestions(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const trx = await db.transaction();
+        
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
+            // 1. First create the exam
+            const examData = {
+                subject_id: req.body.subject_id,
+                semester_id: req.body.semester_id,
+                title: req.body.title,
+                description: req.body.description,
+                time_limit: req.body.time_limit,
+                total_mark: req.body.total_mark,
+                passing_mark: req.body.passing_mark,
+                start_datetime: req.body.start_datetime,
+                end_datetime: req.body.end_datetime,
+                announced: req.body.announced || false
+            };
+
+            const exam = await examService.createExam(examData, trx);
+            
+            // 2. Then create exam questions
+            const questions = req.body.questions || [];
+            const questionResults = [];
+            
+            for (const question of questions) {
+                const examQuestion = await examQuestionService.createExamQuestion({
+                    question_id: question.question_id,
+                    mark: question.mark,
+                    exam_id: exam[0].id
+                }, trx);
+                
+                questionResults.push(examQuestion[0]);
             }
-            const Exam = await examService.createExam(req.body);
-            res.status(201).json(Exam);
+
+            await trx.commit();
+            
+            // 3. Return combined response
+            res.status(201).json({
+                exam: exam[0],
+                questions: questionResults
+            });
         } catch (error) {
+            await trx.rollback();
             res.status(400).json({ error: error.message });
         }
     },

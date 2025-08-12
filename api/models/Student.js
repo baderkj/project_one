@@ -19,7 +19,7 @@ class Student {
   static async getCurriculumId(grade_level) {
     return await db('curriculums').where({ level_grade:grade_level,is_active:true }).first();
   }
-  async findByEmail(email, trx = null) {
+  static async findByEmail(email, trx = null) {
     const user= await db('users').where({email}).first();
     const query =  db('students').where({ user_id:user.id }).first();
     if (trx) query.transacting(trx);

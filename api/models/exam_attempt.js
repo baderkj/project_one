@@ -11,12 +11,23 @@ class ExamAttempt {
     return await db('exam_attempts').where({ id }).first();
   }
 
+
   static async findAll() {
     return await db('exam_attempts').select('*') ;
   }
-
-  static async update(id, updates) {
-    return await db('exam_attempts').where({ id }).update(updates).returning('*');
+  static async checkIfStudentTakeAnExam(student_id,exam_id) {
+    return await db('exam_attempts')
+    .where({ 
+        exam_id: exam_id,
+        student_id: student_id 
+    })
+    .first();
+  }
+ 
+  static async update(id, updates,trx=null) {
+    const query =db('exam_attempts');
+    if (trx) query.transacting(trx);
+    return await query.where({ id }).update(updates).returning('*');
   }
 
   static async delete(id) {

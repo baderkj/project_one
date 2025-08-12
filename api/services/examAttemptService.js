@@ -9,12 +9,16 @@ module.exports = {
     return await ExamAttempt.findById(id);
   },
 
+  async checkIfStudentTakeAnExam(student_id,exam_id) {
+    return await ExamAttempt.checkIfStudentTakeAnExam(student_id,exam_id);
+  },
+
   async getAllExamAttempts() {
     return await ExamAttempt.findAll();
   },
 
-  async updateExamAttempt(id, updates) {
-    return await ExamAttempt.update(id, updates);
+  async updateExamAttempt(id, updates,trx=null) {
+    return await ExamAttempt.update(id, updates,trx);
   },
 
   async deleteExamAttempt(id) {
