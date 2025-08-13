@@ -95,6 +95,10 @@ exports.seed = async function (knex) {
                 max: 12,
             })}${faker.string.alpha({ length: 1, casing: 'upper' })}`,
             floor_number: faker.number.int({ min: 1, max: 4 }),
+            level_grade:faker.number.int({
+                min: 9,
+                max: 12,
+            })
         });
     }
     const classIds = await knex('classes').insert(classes).returning('id');

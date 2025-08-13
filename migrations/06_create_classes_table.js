@@ -7,6 +7,7 @@ exports.up = function (knex) {
     table.increments('id').primary();
     table.string('class_name').notNullable();
     table.integer('floor_number').notNullable();
+    table.enum('level_grade', ['9', '10', '11', '12']).notNullable();
 
     table.timestamps(true, true); // created_at and updated_at
   });

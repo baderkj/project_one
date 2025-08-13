@@ -61,6 +61,16 @@ module.exports = {
     }
   },
 
+  async getClassesGroupedByGrade(req, res) {
+    try {
+      const Classes = await classService.getClassesGroupedByGrade();
+      if (!Classes) return res.status(404).json({ error: 'Class not found' });
+      res.json(Classes);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   async getAllClasses(req, res) {
     try {
       const Class = await classService.getAllClasses();

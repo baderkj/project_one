@@ -13,6 +13,43 @@ class Class {
     return await db('classes').select('*') ;
   }
 
+  static async getClassesGroupedByGrade() {
+    
+    const classes = await db('classes').select('*');
+    
+    const studentCounts = new Map();
+    
+    const classStudentCounts = await db('students')
+        .select('class_id', db.raw('COUNT(*) as student_count'))
+        .groupBy('class_id');
+    
+    classStudentCounts.forEach(row => {
+        studentCounts.set(row.class_id, row.student_count);
+    });
+    
+    const grouped = classes.reduce((acc, classItem) => {
+        const gradeKey = classItem.level_grade || 'Ungrouped';
+        
+        if (!acc[gradeKey]) {
+            acc[gradeKey] = {
+                grade_level: gradeKey,
+                classes: []
+            };
+        }
+        
+        acc[gradeKey].classes.push({
+            id: classItem.id,
+            class_name: classItem.class_name,
+            floor_number: classItem.floor_number,
+            capacity: studentCounts.get(classItem.id) || 0
+        });
+        
+        return acc;
+    }, {});
+    
+    return Object.values(grouped);
+}
+
   static async update(id, updates) {
     return await db('classes').where({ id }).update(updates).returning('*');
   }

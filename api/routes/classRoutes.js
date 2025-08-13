@@ -19,11 +19,18 @@ router.get(
   hasPermission('get_all_classes'),
   classController.getAllClasses
 );
+
 router.get(
   '/students',
   authMiddleware,
   hasPermission('get_students_in_class'),
   classController.getStudentsInClass
+);
+router.get(
+  '/grade_group',
+  authMiddleware,
+  // hasPermission('get_classes_grouped_by_grade'),
+  classController.getClassesGroupedByGrade
 );
 router.get(
   '/schedule',

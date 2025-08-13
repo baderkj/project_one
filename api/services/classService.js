@@ -13,6 +13,10 @@ module.exports = {
     return await Class.findAll();
   },
 
+  async getClassesGroupedByGrade() {
+    return await Class.getClassesGroupedByGrade();
+  },
+
   async updateClass(id, updates) {
     return await Class.update(id, updates);
   },
