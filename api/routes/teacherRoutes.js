@@ -33,8 +33,14 @@ router.get(
 router.get(
   '/schedule',
   authMiddleware,
-  hasPermission('get_teacher_schedule'),
+  // hasPermission('get_teacher_schedule'),
   teacherController.getTeacherSchedule
+);
+router.get(
+  '/classes',
+  authMiddleware,
+  // hasPermission('get_teacher_classes'),
+  teacherController.getClassesByTeacher
 );
 router.get(
   '/:id',

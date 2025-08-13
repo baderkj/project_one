@@ -124,6 +124,76 @@ class Teacher {
   return result;
 
   }
+  static async getClassesByTeacher(teacherId) {
+    try {
+       
+        const schedules = await db('schedules as sc')
+            .join('classes as cl', 'sc.class_id', 'cl.id')
+            .join('subjects as sub', 'sc.subject_id', 'sub.id')
+            .join('periods as p', 'sc.period_id', 'p.id')
+            .join('days as d', 'sc.day_id', 'd.id')
+            .where('sc.teacher_id', teacherId)
+            .select(
+                'sc.id as schedule_id',
+                'cl.id as class_id',
+                'cl.class_name',
+                'cl.level_grade',
+                'sub.id as subject_id',
+                'sub.name as subject_name',
+                'p.id as period_id',
+                'p.start_time',
+                'p.end_time',
+                'd.id as day_id',
+                'd.name as day_name'
+            )
+            .orderBy('d.id')
+            .orderBy('p.start_time');
+
+        
+        const classesMap = new Map();
+        
+        schedules.forEach(schedule => {
+            if (!classesMap.has(schedule.class_id)) {
+                classesMap.set(schedule.class_id, {
+                    class_id: schedule.class_id,
+                    class_name: schedule.class_name,
+                    level_grade: schedule.level_grade,
+                    subjects: [],
+                    schedule: []
+                });
+            }
+            
+            const classObj = classesMap.get(schedule.class_id);
+            
+           
+            const subjectExists = classObj.subjects.some(
+                sub => sub.subject_id === schedule.subject_id
+            );
+            
+            if (!subjectExists) {
+                classObj.subjects.push({
+                    subject_id: schedule.subject_id,
+                    subject_name: schedule.subject_name
+                });
+            }
+            
+            // Add schedule entry
+            classObj.schedule.push({
+            
+                day_name: schedule.day_name,
+               subject_name:schedule.subject_name,
+                start_time: schedule.start_time,
+                end_time: schedule.end_time
+            });
+        });
+        
+        // Convert map to array
+        return Array.from(classesMap.values());
+    } catch (error) {
+        console.error('Error in getClassesByTeacher:', error);
+        throw error;
+    }
+}
 }
 
 module.exports = Teacher;

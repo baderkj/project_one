@@ -38,5 +38,9 @@ module.exports = {
 
   async getQuestions(id) {
     return await Teacher.getQuestions(id);
+  },
+
+  async getClassesByTeacher(id) {
+    return await Teacher.getClassesByTeacher(id);
   }
 };
