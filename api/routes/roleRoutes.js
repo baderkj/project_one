@@ -6,37 +6,44 @@ const hasPermission = require('../../middleware/hasPermission');
 const { roleValidator } = require('../validators/roleValidator');
 
 router.post(
-  '/',
-  roleValidator,
-  authMiddleware,
-  // hasPermission('create_role'),
-  roleController.createRole
+    '/',
+    roleValidator,
+    authMiddleware,
+    // hasPermission('create_role'),
+    roleController.createRole
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('show_all_roles'),
-  roleController.getAllRoles
+    '/',
+    authMiddleware,
+    hasPermission('show_all_roles'),
+    roleController.getAllRoles
+);
+
+router.get(
+    '/employees',
+    authMiddleware,
+    hasPermission('show_all_roles'),
+    roleController.getAllEmployeesRoles
 );
 
 router.put(
-  '/update-role',
-  authMiddleware,
-  // hasPermission('update_role'),
-  roleController.updatePermissions
+    '/update-role',
+    authMiddleware,
+    // hasPermission('update_role'),
+    roleController.updatePermissions
 );
 router.get(
-  '/:roleId/permissions',
-  authMiddleware,
-  hasPermission('show_role_permissions'),
-  roleController.getRolePermissions
+    '/:roleId/permissions',
+    authMiddleware,
+    hasPermission('show_role_permissions'),
+    roleController.getRolePermissions
 );
 
 router.delete(
-  '/:roleId',
-  authMiddleware,
-  // hasPermission('delete_role'),
-  roleController.deleteRole
+    '/:roleId',
+    authMiddleware,
+    // hasPermission('delete_role'),
+    roleController.deleteRole
 );
 
 module.exports = router;

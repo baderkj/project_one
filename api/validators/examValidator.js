@@ -10,5 +10,6 @@ exports.examValidator = [
   body('start_datetime').isLength({min:3}).withMessage('Invalid start_datetime'),
   body('end_datetime').isLength({min:3}).withMessage('Invalid end_date_time'),
   body('announced').optional().isBoolean().withMessage('Invalid announced value'),
+  body('exam_type').optional().isIn(['exam','quiz']).withMessage('Invalid exam_type'),
 ];
 

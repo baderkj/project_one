@@ -18,16 +18,61 @@ module.exports = {
                 throw new Error('Student not found');
             }
 
+            // Determine target archive for current academic year if not provided
+            let targetArchiveId = paymentData.archive_id;
+            if (!targetArchiveId) {
+                const today = new Date().toISOString().split('T')[0];
+                let currentAcademicYear = await db('academic_years')
+                    .where('start_year', '<=', today)
+                    .andWhere('end_year', '>=', today)
+                    .orderBy('start_year', 'desc')
+                    .first()
+                    .transacting(trx);
+                if (!currentAcademicYear) {
+                    currentAcademicYear = await db('academic_years')
+                        .orderBy('start_year', 'desc')
+                        .first()
+                        .transacting(trx);
+                }
+                if (!currentAcademicYear) {
+                    throw new Error(
+                        'No academic year found to associate payment'
+                    );
+                }
+                const archive = await db('archives')
+                    .where({
+                        student_id: paymentData.student_id,
+                        academic_year_id: currentAcademicYear.id,
+                    })
+                    .first()
+                    .transacting(trx);
+                if (!archive) {
+                    // Create archive for the student with remaining_tuition = full_tuition
+                    const created = await db('archives')
+                        .insert({
+                            student_id: paymentData.student_id,
+                            academic_year_id: currentAcademicYear.id,
+                            remaining_tuition:
+                                currentAcademicYear.full_tuition || 0,
+                        })
+                        .returning('*')
+                        .transacting(trx);
+                    targetArchiveId = created[0].id;
+                } else {
+                    targetArchiveId = archive.id;
+                }
+            }
+
             // Create the payment
             const payment = await db('tuition_payments')
-                .insert(paymentData)
+                .insert({ ...paymentData, archive_id: targetArchiveId })
                 .returning('*')
                 .transacting(trx);
 
             // Update archive if archive_id is provided
-            if (paymentData.archive_id) {
+            if (targetArchiveId) {
                 const archive = await db('archives')
-                    .where({ id: paymentData.archive_id })
+                    .where({ id: targetArchiveId })
                     .first()
                     .transacting(trx);
                 if (archive) {
@@ -36,7 +81,7 @@ module.exports = {
                         archive.remaining_tuition - paymentData.amount
                     );
                     await db('archives')
-                        .where({ id: paymentData.archive_id })
+                        .where({ id: targetArchiveId })
                         .update({ remaining_tuition: newRemainingTuition })
                         .transacting(trx);
                 }
@@ -206,16 +251,60 @@ module.exports = {
                     );
                 }
 
+                // Determine target archive for current academic year if not provided
+                let targetArchiveId = paymentData.archive_id;
+                if (!targetArchiveId) {
+                    const today = new Date().toISOString().split('T')[0];
+                    let currentAcademicYear = await db('academic_years')
+                        .where('start_year', '<=', today)
+                        .andWhere('end_year', '>=', today)
+                        .orderBy('start_year', 'desc')
+                        .first()
+                        .transacting(trx);
+                    if (!currentAcademicYear) {
+                        currentAcademicYear = await db('academic_years')
+                            .orderBy('start_year', 'desc')
+                            .first()
+                            .transacting(trx);
+                    }
+                    if (!currentAcademicYear) {
+                        throw new Error(
+                            'No academic year found to associate payment'
+                        );
+                    }
+                    const archive = await db('archives')
+                        .where({
+                            student_id: paymentData.student_id,
+                            academic_year_id: currentAcademicYear.id,
+                        })
+                        .first()
+                        .transacting(trx);
+                    if (!archive) {
+                        const created = await db('archives')
+                            .insert({
+                                student_id: paymentData.student_id,
+                                academic_year_id: currentAcademicYear.id,
+                                remaining_tuition:
+                                    currentAcademicYear.full_tuition || 0,
+                            })
+                            .returning('*')
+                            .transacting(trx);
+                        targetArchiveId = created[0].id;
+                    } else {
+                        targetArchiveId = archive.id;
+                    }
+                }
+
                 // Create the payment
                 const payment = await db('tuition_payments')
-                    .insert(paymentData)
+                    .insert({ ...paymentData, archive_id: targetArchiveId })
                     .returning('*')
                     .transacting(trx);
 
                 // Update archive if archive_id is provided
-                if (paymentData.archive_id) {
+                if (targetArchiveId) {
                     const archive = await db('archives')
-                        .where({ id: paymentData.archive_id })
+                        .where({ id: targetArchiveId })
                         .first()
                         .transacting(trx);
                     if (archive) {
@@ -224,7 +313,7 @@ module.exports = {
                             archive.remaining_tuition - paymentData.amount
                         );
                         await db('archives')
-                            .where({ id: paymentData.archive_id })
+                            .where({ id: targetArchiveId })
                             .update({ remaining_tuition: newRemainingTuition })
                             .transacting(trx);
                     }

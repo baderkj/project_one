@@ -1,8 +1,8 @@
 const Exam= require('../models/Exam');
 
 module.exports = {
-  async createExam(ExamData) {
-    return await Exam.create(ExamData);
+  async createExam(ExamData, trx = null) {
+    return await Exam.create(ExamData, trx);
   },
 
   async getExam(id) {

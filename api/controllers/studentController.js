@@ -6,176 +6,226 @@ const { db } = require('../../config/db');
 
 const bcrypt = require('bcrypt-nodejs');
 module.exports = {
+    async createStudent(req, res) {
+        const { db } = require('../../config/db');
 
-  async createStudent(req, res) {
-    const { db } = require('../../config/db');
-    
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }  
-      
-      const { name, email, phone, birth_date, class_id, grade_level } = req.body;
-      const password = userService.generateRandomPassword();
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
 
-      const hash = bcrypt.hashSync(password);
-      const role=await roleService.getRoleByName('student');
-      console.log(role)
-      if (!role||role.length==0){
-        return res.status(400).json({msg:'there is no role for student'});
-      }
-      const curriculum=await studentService.getCurriculumId(grade_level);
-      console.log(curriculum);
-      // Using transaction
-      const result = await db.transaction(async (trx) => {
-        // Create user within transaction
-        const user = await userService.createUser({
-          name: name,
-          birth_date: birth_date,
-          email: email,
-          phone: phone,
-          role_id:role[0].id,
-          password_hash: hash
-        }, trx);
-        if(user[0]){
-          const sendMessage= await userService.sendWhatsAppMessage(user[0].phone,`your email is : ${email} 
-      and password is:
-      ${password}`);
-            console.log(sendMessage);
+            const { name, email, phone, birth_date, class_id, grade_level } =
+                req.body;
+            const password = userService.generateRandomPassword();
+
+            const hash = bcrypt.hashSync(password);
+            const role = await roleService.getRoleByName('student');
+            console.log(role);
+            if (!role || role.length == 0) {
+                return res
+                    .status(400)
+                    .json({ msg: 'there is no role for student' });
+            }
+            const curriculum = await studentService.getCurriculumId(
+                grade_level
+            );
+            console.log(curriculum);
+            // Using transaction
+            const result = await db.transaction(async (trx) => {
+                // Create user within transaction
+                const user = await userService.createUser(
+                    {
+                        name: name,
+                        birth_date: birth_date,
+                        email: email,
+                        phone: phone,
+                        role_id: role[0].id,
+                        password_hash: hash,
+                    },
+                    trx
+                );
+                if (user[0]) {
+                    const sendMessage = await userService.sendWhatsAppMessage(
+                        user[0].phone,
+                        `your email is : ${email}
+                        and password is:
+                        ${password}`
+                    );
+                    console.log(sendMessage);
+                }
+                // Create student within the same transaction
+                const student = await studentService.createStudent(
+                    {
+                        user_id: user[0].id,
+                        class_id: class_id,
+                        curriculum_id: curriculum.id,
+                        grade_level: grade_level,
+                    },
+                    trx
+                );
+                // Create an initial archive record for the current academic year with remaining_tuition = full_tuition
+                const today = new Date().toISOString().split('T')[0];
+                let currentAcademicYear = await db('academic_years')
+                    .where('start_year', '<=', today)
+                    .andWhere('end_year', '>=', today)
+                    .orderBy('start_year', 'desc')
+                    .first()
+                    .transacting(trx);
+                if (!currentAcademicYear) {
+                    currentAcademicYear = await db('academic_years')
+                        .orderBy('start_year', 'desc')
+                        .first()
+                        .transacting(trx);
+                }
+
+                if (currentAcademicYear) {
+                    await db('archives')
+                        .insert({
+                            student_id: student[0].id,
+                            academic_year_id: currentAcademicYear.id,
+                            remaining_tuition:
+                                currentAcademicYear.full_tuition || 0,
+                        })
+                        .transacting(trx);
+                }
+
+                return student;
+            });
+
+            res.status(201).json(result);
+        } catch (error) {
+            console.error('Transaction error:', error);
+            res.status(400).json({
+                error: error.message,
+                msg: 'Failed to create student. All changes rolled back.',
+            });
         }
-        // Create student within the same transaction
-        const student = await studentService.createStudent({
-          user_id: user[0].id,
-          class_id: class_id,
-          curriculum_id: curriculum.id,
-          grade_level: grade_level,
-        }, trx);
-        
-        return student;
-      });
-      
-      res.status(201).json(result);
-    } catch (error) {
-      console.error('Transaction error:', error);
-      res.status(400).json({ 
-        error: error.message,
-        msg: 'Failed to create student. All changes rolled back.'
-      });
-    }
-  },
+    },
 
-  async getStudent(req, res) {
-    try {
-      const student = await studentService.getStudent(req.params.id);
-      if (!student) return res.status(404).json({ error: 'Student not found' });
-      res.json(student);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
-  async getAllStudents(req, res) {
-    try {
-      const student = await studentService.getAllStudents();
-      res.json(student);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
-  async updateStudent(req, res) {
-    try {
-      const student = await studentService.updateStudent(req.params.id, req.body);
-      if (!student||student.length==0) return res.status(404).json({ error: 'Student not found' });
-      res.json(student);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-
-  async deleteStudent(req, res) {
-    try {
-      const result = await studentService.deleteStudent(req.params.id);
-      if (!result) return res.status(404).json({ error: 'Student not found' });
-      res.status(200).json({message:'deleted successfuly'});
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-  ,
-  async getStudentSubjects(req, res) {
-    try {
-     const userId = req.user.id;
-     const student = await db('students')
-    .select('*')
-    .where({ user_id: userId });
-     const subjects= await studentService.getSubjects(student[0].id);
-      if (!subjects) return res.status(404).json({ error: 'Student not found' });
-      res.json(subjects);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-
-  async getClass(req, res) {
-    try {
-      const student = await studentService.getStudent(req.body.id);
-      if(!student) return res.status(404).json({error:'Student Not found'})
-     const Class= await studentService.getClass(req.body.id);
-      if (!Class) return res.status(404).json({ error: 'Class not found' });
-      res.json(Class);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-  async getStudentArchive(req, res) {
-    try {
-      const studentExists = await studentService.getStudent(req.body.id);
-      if (!studentExists) return res.status(404).json({ error: 'student not found' });
-      const archive = await studentService.getStudentArchive(req.body.id);
-      if (!archive) return res.status(404).json({ error: 'archive not found' });
-      res.json(archive);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-  async getStudentSubjectsNameList(req, res) {
-    const userId = req.user.id;
-    try {
-        const studentCurriculum = await db('students')
-            .select('curriculum_id')
-            .where({ user_id: userId })
-            .first();
-
-        if (!studentCurriculum) {
-            return res
-                .status(404)
-                .json({ error: 'Student record not found for this user' });
+    async getStudent(req, res) {
+        try {
+            const student = await studentService.getStudent(req.params.id);
+            if (!student)
+                return res.status(404).json({ error: 'Student not found' });
+            res.json(student);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
-        const subjects = await db('subjects')
-            .select('id', 'name as subject_name')
-            .where({ curriculum_id: studentCurriculum.curriculum_id });
+    },
 
-        if (!subjects)
-            return res.status(404).json({ error: 'Student not found' });
+    async getAllStudents(req, res) {
+        try {
+            const student = await studentService.getAllStudents();
+            res.json(student);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
 
-        res.json(subjects);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-},
-  
+    async updateStudent(req, res) {
+        try {
+            const student = await studentService.updateStudent(
+                req.params.id,
+                req.body
+            );
+            if (!student || student.length == 0)
+                return res.status(404).json({ error: 'Student not found' });
+            res.json(student);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    },
+
+    async deleteStudent(req, res) {
+        try {
+            const result = await studentService.deleteStudent(req.params.id);
+            if (!result)
+                return res.status(404).json({ error: 'Student not found' });
+            res.status(200).json({ message: 'deleted successfuly' });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    async getStudentSubjects(req, res) {
+        try {
+            const userId = req.user.id;
+            const student = await db('students')
+                .select('*')
+                .where({ user_id: userId });
+            const subjects = await studentService.getSubjects(student[0].id);
+            if (!subjects)
+                return res.status(404).json({ error: 'Student not found' });
+            res.json(subjects);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    },
+
+    async getClass(req, res) {
+        try {
+            const student = await studentService.getStudent(req.body.id);
+            if (!student)
+                return res.status(404).json({ error: 'Student Not found' });
+            const Class = await studentService.getClass(req.body.id);
+            if (!Class)
+                return res.status(404).json({ error: 'Class not found' });
+            res.json(Class);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    },
+    async getStudentArchive(req, res) {
+        try {
+            const studentExists = await studentService.getStudent(req.body.id);
+            if (!studentExists)
+                return res.status(404).json({ error: 'student not found' });
+            const archive = await studentService.getStudentArchive(req.body.id);
+            if (!archive)
+                return res.status(404).json({ error: 'archive not found' });
+            res.json(archive);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    async getStudentSubjectsNameList(req, res) {
+        const userId = req.user.id;
+        try {
+            const studentCurriculum = await db('students')
+                .select('curriculum_id')
+                .where({ user_id: userId })
+                .first();
+
+            if (!studentCurriculum) {
+                return res
+                    .status(404)
+                    .json({ error: 'Student record not found for this user' });
+            }
+            const subjects = await db('subjects')
+                .select('id', 'name as subject_name')
+                .where({ curriculum_id: studentCurriculum.curriculum_id });
+
+            if (!subjects)
+                return res.status(404).json({ error: 'Student not found' });
+
+            res.json(subjects);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+
     async getStudentSchedule(req, res) {
         try {
             const userId = req.user.id;
             const student = await db('students')
                 .select('*')
                 .where({ user_id: userId });
-          console.log(student,userId)
+            console.log(student, userId);
             if (!student)
                 return res.status(404).json({ error: 'Student Not found' });
-            const schedules = await studentService.getStudentSchedule(student[0].id);
+            const schedules = await studentService.getStudentSchedule(
+                student[0].id
+            );
             if (!schedules)
                 return res.status(404).json({ error: 'Class not found' });
             res.json(schedules);

@@ -1,12 +1,25 @@
 const { db } = require('../../config/db');
+const { v4: uuidv4 } = require('uuid');
 
 class Exam {
-    static async create(ExamData) {
-        return await db('exams').insert(ExamData).returning('*');
+    static async create(ExamData, trx = null) {
+        const knexOrTrx = trx || db;
+        const shortUuid = (ExamData.uuid || uuidv4())
+            .replace(/-/g, '')
+            .slice(0, 10);
+        const dataWithUuid = {
+            ...ExamData,
+            uuid: shortUuid,
+        };
+        return await knexOrTrx('exams').insert(dataWithUuid).returning('*');
     }
 
     static async findById(id) {
-        return await db('exams').where({ id }).first();
+        return await db('exams')
+            .where({
+                id,
+            })
+            .first();
     }
 
     static async findAll() {
@@ -14,11 +27,20 @@ class Exam {
     }
 
     static async update(id, updates) {
-        return await db('exams').where({ id }).update(updates).returning('*');
+        return await db('exams')
+            .where({
+                id,
+            })
+            .update(updates)
+            .returning('*');
     }
 
     static async delete(id) {
-        return await db('exams').where({ id }).del();
+        return await db('exams')
+            .where({
+                id,
+            })
+            .del();
     }
 
     static async getExamQuestion(examId) {
@@ -29,6 +51,7 @@ class Exam {
             .where('e.id', examId)
             .select(
                 'e.id as exam_id',
+                'e.uuid as exam_uuid',
                 'e.title as exam_title',
                 'e.total_mark',
                 'e.time_limit',
@@ -52,6 +75,7 @@ class Exam {
             if (!exam) {
                 exam = {
                     exam_id: r.exam_id,
+                    exam_uuid: r.exam_uuid,
                     exam_title: r.exam_title,
                     total_mark: r.total_mark,
                     passing_mark: r.passing_mark,

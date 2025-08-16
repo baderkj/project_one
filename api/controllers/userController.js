@@ -8,9 +8,11 @@ const { db } = require('../../config/db');
 const jwt = require('jsonwebtoken');
 const { messaging } = require('firebase-admin');
 const roleService = require('../services/roleService');
+const { stripSensitive } = require('../utils/sanitize');
 require('dotenv').config();
 module.exports = {
     async signIn(req, res) {
+        console.log(req.body);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -118,7 +120,7 @@ module.exports = {
             const user = await userService.getUser(req.params.id);
             if (!user) return res.status(404).json({ error: 'User not found' });
             const userData = await userService.removeHashedPassword(user);
-            res.json(userData);
+            res.json(stripSensitive(userData));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -197,7 +199,7 @@ module.exports = {
 
             const fileterPermissions = await permissions.map((el) => el.name);
 
-            res.json({ user, permissions: fileterPermissions });
+            res.json(stripSensitive({ user, permissions: fileterPermissions }));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -206,7 +208,7 @@ module.exports = {
     async getAllUsers(req, res) {
         try {
             const users = await userService.getAllUsers();
-            res.json(users);
+            res.json(stripSensitive(users));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -224,7 +226,7 @@ module.exports = {
             const user = await userService.updateUser(req.params.id, req.body);
             if (!user || user.length == 0)
                 return res.status(404).json({ error: 'User not found' });
-            res.json(user);
+            res.json(stripSensitive(user));
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
@@ -245,7 +247,7 @@ module.exports = {
         try {
             const users = await userService.search(req.params.name);
 
-            res.json(users);
+            res.json(stripSensitive(users));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -254,7 +256,7 @@ module.exports = {
     async paginate(req, res) {
         try {
             const users = await userService.paginate(req.body);
-            res.json(users);
+            res.json(stripSensitive(users));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -262,10 +264,10 @@ module.exports = {
 
     async getEmployees(req, res) {
         try {
-            const emplyees = await userService.getEmployees(req.params.id);
+            const emplyees = await userService.getEmployees();
             if (!emplyees)
                 return res.status(404).json({ error: 'emplyees not found' });
-            res.json(emplyees);
+            res.json(stripSensitive(emplyees));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -273,7 +275,8 @@ module.exports = {
 
     async signOut(req, res) {
         try {
-            const token = req.headers.authorization?.split(' ')[1] || req.headers.token;;
+            const token =
+                req.headers.authorization?.split(' ')[1] || req.headers.token;
             if (!token) {
                 return res.status(400).json({ error: 'No token provided' });
             }
@@ -283,7 +286,10 @@ module.exports = {
             const expiresAt = new Date(decoded.exp * 1000);
 
             // Add token to blacklist
-            await blackListTokenService.createBlacklistedToken(token, expiresAt);
+            await blackListTokenService.createBlacklistedToken(
+                token,
+                expiresAt
+            );
 
             res.json({ message: 'Successfully signed out' });
         } catch (error) {

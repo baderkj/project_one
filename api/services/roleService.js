@@ -3,40 +3,43 @@ const Permission = require('../models/Permission');
 const RolePermission = require('../models/RolePermission');
 
 module.exports = {
-  async createRole(name) {
-    const [role] = await Role.create(name);
-    return role;
-  },
+    async createRole(name) {
+        const [role] = await Role.create(name);
+        return role;
+    },
 
-  async getAllRoles() {
-    return await Role.findAll();
-  },
+    async getAllRoles() {
+        return await Role.findAll();
+    },
+    async getAllEmployeesRoles() {
+        return await Role.findAllEmployees();
+    },
 
-  async assignPermissionsToRole(roleId, permissionIds) {
-    return await RolePermission.assign(roleId, permissionIds);
-  },
+    async assignPermissionsToRole(roleId, permissionIds) {
+        return await RolePermission.assign(roleId, permissionIds);
+    },
 
-  async updatePermissionsToRole(roleId, permissionIds) {
-    if (!Array.isArray(permissionIds) || permissionIds.length === 0) {
-      throw new Error('Permission IDs must be a non-empty array');
-    }
+    async updatePermissionsToRole(roleId, permissionIds) {
+        if (!Array.isArray(permissionIds) || permissionIds.length === 0) {
+            throw new Error('Permission IDs must be a non-empty array');
+        }
 
-    return await RolePermission.update(roleId, permissionIds);
-  },
+        return await RolePermission.update(roleId, permissionIds);
+    },
 
-  async getPermissionsOfRole(roleId) {
-    return await RolePermission.getPermissionsByRoleId(roleId);
-  },
+    async getPermissionsOfRole(roleId) {
+        return await RolePermission.getPermissionsByRoleId(roleId);
+    },
 
-  async getRoleByName(name) {
-    return await Role.getRoleByName(name);
-  },
+    async getRoleByName(name) {
+        return await Role.getRoleByName(name);
+    },
 
-  async getRoleById(id) {
-    return await Role.getRoleById(id);
-  },
+    async getRoleById(id) {
+        return await Role.getRoleById(id);
+    },
 
-  async deleteRole(id) {
-    return await Role.delete(id);
-  },
+    async deleteRole(id) {
+        return await Role.delete(id);
+    },
 };

@@ -39,6 +39,7 @@ const createTuitionPaymentValidation = [
         .isInt({ min: 1 })
         .withMessage('Verified by must be a positive integer'),
 
+    // archive_id optional; if omitted back-end will find current archive
     body('archive_id')
         .optional()
         .isInt({ min: 1 })
