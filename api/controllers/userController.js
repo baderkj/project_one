@@ -264,10 +264,11 @@ module.exports = {
 
     async getEmployees(req, res) {
         try {
+            console.log('getEmployees');
             const emplyees = await userService.getEmployees();
             if (!emplyees)
                 return res.status(404).json({ error: 'emplyees not found' });
-            res.json(stripSensitive(emplyees));
+            res.status(200).json(stripSensitive(emplyees));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

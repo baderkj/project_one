@@ -30,6 +30,7 @@ const semesterRoutes = require('./routes/semesterRoutes');
 const tuitionPaymentRoutes = require('./routes/tuitionPaymentRoutes');
 const permissionRoutes = require('./routes/permissionRoutes');
 const teacherSubjectsRoutes = require('./routes/teacherSubjectsRoutes');
+const behaviorRoutes = require('./routes/behaviorRoutes');
 // Mount routes
 router.use('/users', userRoutes);
 router.use('/teachers', teacherRoutes);
@@ -56,6 +57,6 @@ router.use('/fcm', fcmTokenRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/tuition-payments', tuitionPaymentRoutes);
 router.use('/teachers_subjects', teacherSubjectsRoutes);
-
+router.use('/behaviors', behaviorRoutes);
 
 module.exports = router;

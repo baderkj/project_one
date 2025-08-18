@@ -102,6 +102,7 @@ exports.seed = async function (knex) {
         { name: 'create_behavior' },
         { name: 'update_behavior' },
         { name: 'delete_behavior' },
+        { name: 'get_student_behaviors' },
         // archive
         { name: 'create_archive' },
         { name: 'get_all_archives' },
