@@ -216,10 +216,10 @@ module.exports = {
 
     async updateUser(req, res) {
         try {
-            const { password_hash } = req.body;
-            if (password_hash) {
+            const { name, email, phone, birth_date, role_id } = req.body;
+            if (!role_id && !name && !email && !phone && !birth_date) {
                 res.status(400).json({
-                    msg: "password hash can't be in updated user",
+                    msg: "role id can't be updated",
                 });
                 return;
             }
