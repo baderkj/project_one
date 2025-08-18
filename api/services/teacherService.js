@@ -4,6 +4,9 @@ module.exports = {
     async createTeacher(teacherData, trx = null) {
         return await Teacher.create(teacherData, trx);
     },
+    async attachSubjects(teacherId, subjectIds, trx = null) {
+        return await Teacher.attachSubjects(teacherId, subjectIds, trx);
+    },
 
     async getTeacher(id) {
         return await Teacher.findById(id);

@@ -96,6 +96,7 @@ exports.seed = async function (knex) {
         { name: 'update_class' },
         { name: 'get_class_schedule' },
         { name: 'delete_class' },
+        { name: 'get_class_subjects_with_teachers' },
         // behavior
         { name: 'get_all_behaviors' },
         { name: 'get_behavior' },

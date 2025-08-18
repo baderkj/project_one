@@ -15,8 +15,15 @@ module.exports = {
                 return res.status(400).json({ errors: errors.array() });
             }
 
-            const { name, email, phone, birth_date, class_id, grade_level } =
-                req.body;
+            const {
+                name,
+                email,
+                phone,
+                birth_date,
+                class_id,
+                grade_level,
+                discount_percentage,
+            } = req.body;
             const password = userService.generateRandomPassword();
 
             const hash = bcrypt.hashSync(password);
@@ -45,15 +52,15 @@ module.exports = {
                     },
                     trx
                 );
-                if (user[0]) {
-                    const sendMessage = await userService.sendWhatsAppMessage(
-                        user[0].phone,
-                        `your email is : ${email}
-                        and password is:
-                        ${password}`
-                    );
-                    console.log(sendMessage);
-                }
+                // if (user[0]) {
+                //     const sendMessage = await userService.sendWhatsAppMessage(
+                //         user[0].phone,
+                //         `your email is : ${email}
+                //         and password is:
+                //         ${password}`
+                //     );
+                //     console.log(sendMessage);
+                // }
                 // Create student within the same transaction
                 const student = await studentService.createStudent(
                     {
@@ -64,7 +71,6 @@ module.exports = {
                     },
                     trx
                 );
-                // Create an initial archive record for the current academic year with remaining_tuition = full_tuition
                 const today = new Date().toISOString().split('T')[0];
                 let currentAcademicYear = await db('academic_years')
                     .where('start_year', '<=', today)
@@ -80,12 +86,25 @@ module.exports = {
                 }
 
                 if (currentAcademicYear) {
+                    const fullTuition =
+                        Number(currentAcademicYear.full_tuition) || 0;
+                    const discount =
+                        typeof discount_percentage === 'number'
+                            ? discount_percentage
+                            : parseFloat(discount_percentage);
+                    const isValidDiscount =
+                        !isNaN(discount) && discount >= 0 && discount <= 100;
+                    const remainingTuition = isValidDiscount
+                        ? Number(
+                              (fullTuition * (1 - discount / 100)).toFixed(2)
+                          )
+                        : fullTuition;
+
                     await db('archives')
                         .insert({
                             student_id: student[0].id,
                             academic_year_id: currentAcademicYear.id,
-                            remaining_tuition:
-                                currentAcademicYear.full_tuition || 0,
+                            remaining_tuition: remainingTuition,
                         })
                         .transacting(trx);
                 }

@@ -7,6 +7,17 @@ class Teacher {
         return await query.insert(teacherData).returning('*');
     }
 
+    static async attachSubjects(teacherId, subjectIds, trx = null) {
+        if (!Array.isArray(subjectIds) || subjectIds.length === 0) return [];
+        const rows = subjectIds.map((sid) => ({
+            teacher_id: teacherId,
+            subject_id: sid,
+        }));
+        const query = db('teachers_subjects');
+        if (trx) query.transacting(trx);
+        return await query.insert(rows).returning('*');
+    }
+
     static async findById(id) {
         return await db('teachers').where({ id }).first();
     }

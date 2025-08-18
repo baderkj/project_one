@@ -21,6 +21,7 @@ module.exports = {
                 specialization,
                 hire_date,
                 qualification,
+                subject_ids,
             } = req.body;
             const password = userService.generateRandomPassword();
 
@@ -45,15 +46,15 @@ module.exports = {
                     },
                     trx
                 );
-                if (user[0]) {
-                    const sendMessage = await userService.sendWhatsAppMessage(
-                        user[0].phone,
-                        `your email is : ${email} 
-      and password is:
-      ${password}`
-                    );
-                    console.log(sendMessage);
-                }
+                //             if (user[0]) {
+                //                 const sendMessage = await userService.sendWhatsAppMessage(
+                //                     user[0].phone,
+                //                     `your email is : ${email}
+                //   and password is:
+                //   ${password}`
+                //                 );
+                //                 console.log(sendMessage);
+                //             }
                 // Create student within the same transaction
                 const Teacher = await teacherService.createTeacher(
                     {
@@ -64,6 +65,14 @@ module.exports = {
                     },
                     trx
                 );
+
+                if (Array.isArray(subject_ids) && subject_ids.length > 0) {
+                    await teacherService.attachSubjects(
+                        Teacher[0].id,
+                        subject_ids,
+                        trx
+                    );
+                }
 
                 return Teacher;
             });
