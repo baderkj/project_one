@@ -12,7 +12,21 @@ module.exports = {
         return await Role.findAll();
     },
     async getAllEmployeesRoles() {
-        return await Role.findAllEmployees();
+        const roles = await Role.findAllEmployees();
+        const rolesWithPerms = await Promise.all(
+            roles.map(async (r) => {
+                const perms = await RolePermission.getPermissionsByRoleId(r.id);
+                return {
+                    id: r.id,
+                    name: r.name,
+                    permissions: perms.map((p) => ({
+                        permission_id: p.permission_id,
+                        permission_name: p.name,
+                    })),
+                };
+            })
+        );
+        return rolesWithPerms;
     },
 
     async assignPermissionsToRole(roleId, permissionIds) {

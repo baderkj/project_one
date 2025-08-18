@@ -59,6 +59,7 @@ module.exports = {
     async getAllEmployeesRoles(req, res) {
         try {
             const roles = await roleService.getAllEmployeesRoles();
+
             res.status(200).json(roles);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -68,7 +69,8 @@ module.exports = {
     async updatePermissions(req, res) {
         try {
             const { roleId, permissions } = req.body;
-            const exists = await roleService.getRoleById({ id: roleId });
+            const roleIdNum = parseInt(roleId, 10);
+            const exists = await roleService.getRoleById(roleIdNum);
 
             if (exists[0]) {
                 if (permissions.length > 0) {
@@ -101,10 +103,13 @@ module.exports = {
     async getRolePermissions(req, res) {
         try {
             const { roleId } = req.params;
-            const role = await roleService.getRoleById({ id: roleId });
+            const roleIdNum = parseInt(roleId, 10);
+            const role = await roleService.getRoleById(roleIdNum);
             console.log(role);
             if (!role[0]) return res.json({ error: "role doesn't exists" });
-            const permissions = await roleService.getPermissionsOfRole(roleId);
+            const permissions = await roleService.getPermissionsOfRole(
+                roleIdNum
+            );
 
             res.status(200).json(permissions);
         } catch (err) {
