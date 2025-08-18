@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const { messaging } = require('firebase-admin');
 const roleService = require('../services/roleService');
 const { stripSensitive } = require('../utils/sanitize');
+const { toDateOnly } = require('../utils/dateUtils');
 require('dotenv').config();
 module.exports = {
     async signIn(req, res) {
@@ -268,7 +269,11 @@ module.exports = {
             const emplyees = await userService.getEmployees();
             if (!emplyees)
                 return res.status(404).json({ error: 'emplyees not found' });
-            res.status(200).json(stripSensitive(emplyees));
+            const formatted = emplyees.map((emp) => ({
+                ...emp,
+                birth_date: toDateOnly(emp.birth_date),
+            }));
+            res.status(200).json(stripSensitive(formatted));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
