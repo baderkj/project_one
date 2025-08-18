@@ -108,13 +108,65 @@ module.exports = {
 
     async updateTeacher(req, res) {
         try {
-            const teacher = await teacherService.updateTeacher(
-                req.params.id,
-                req.body
-            );
-            if (!teacher || teacher.length == 0)
+            const { db } = require('../../config/db');
+            const teacherId = req.params.id;
+
+            const existingTeacher = await teacherService.getTeacher(teacherId);
+            if (!existingTeacher)
                 return res.status(404).json({ error: 'Teacher not found' });
-            res.json(teacher);
+
+            const {
+                name,
+                email,
+                phone,
+                birth_date,
+                specialization,
+                hire_date,
+                qualification,
+                subject_ids,
+            } = req.body;
+
+            await db.transaction(async (trx) => {
+                const updates = {};
+                if (specialization !== undefined)
+                    updates.specialization = specialization;
+                if (hire_date !== undefined) updates.hire_date = hire_date;
+                if (qualification !== undefined)
+                    updates.qualification = qualification;
+
+                if (Object.keys(updates).length > 0) {
+                    await teacherService.updateTeacher(teacherId, updates);
+                }
+
+                if (
+                    name !== undefined ||
+                    email !== undefined ||
+                    phone !== undefined ||
+                    birth_date !== undefined
+                ) {
+                    const userUpdates = {};
+                    if (name !== undefined) userUpdates.name = name;
+                    if (email !== undefined) userUpdates.email = email;
+                    if (phone !== undefined) userUpdates.phone = phone;
+                    if (birth_date !== undefined)
+                        userUpdates.birth_date = birth_date;
+                    await userService.updateUser(
+                        existingTeacher.user_id,
+                        userUpdates
+                    );
+                }
+
+                if (Array.isArray(subject_ids)) {
+                    await teacherService.clearAndAttachSubjects(
+                        teacherId,
+                        subject_ids,
+                        trx
+                    );
+                }
+            });
+
+            const updated = await teacherService.getTeacher(teacherId);
+            res.json(updated);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }

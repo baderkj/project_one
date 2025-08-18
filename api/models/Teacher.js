@@ -22,12 +22,85 @@ class Teacher {
         return await db('teachers').where({ id }).first();
     }
 
+    static async findByIdDetailed(id) {
+        const rows = await db('teachers as t')
+            .join('users as u', 'u.id', 't.user_id')
+            .leftJoin('teachers_subjects as ts', 'ts.teacher_id', 't.id')
+            .leftJoin('subjects as s', 's.id', 'ts.subject_id')
+            .where('t.id', id)
+            .groupBy(
+                't.id',
+                't.user_id',
+                't.specialization',
+                't.hire_date',
+                't.qualification',
+                'u.id',
+                'u.name',
+                'u.email',
+                'u.phone',
+                'u.birth_date'
+            )
+            .select(
+                't.id as id',
+                't.user_id',
+                't.specialization',
+                't.hire_date',
+                't.qualification',
+                'u.name',
+                'u.email',
+                'u.phone',
+                'u.birth_date'
+            )
+            .select(
+                db.raw(
+                    "COALESCE(json_agg(DISTINCT jsonb_build_object('id', s.id, 'name', s.name)) FILTER (WHERE s.id IS NOT NULL), '[]') as subjects"
+                )
+            );
+
+        return rows && rows.length > 0 ? rows[0] : null;
+    }
+
     static async findByUserId(user_id) {
         return await db('teachers').where({ user_id }).first();
     }
 
     static async findAll() {
         return await db('teachers').select('*');
+    }
+
+    static async findAllDetailed() {
+        return await db('teachers as t')
+            .join('users as u', 'u.id', 't.user_id')
+            .leftJoin('teachers_subjects as ts', 'ts.teacher_id', 't.id')
+            .leftJoin('subjects as s', 's.id', 'ts.subject_id')
+            .groupBy(
+                't.id',
+                't.user_id',
+                't.specialization',
+                't.hire_date',
+                't.qualification',
+                'u.id',
+                'u.name',
+                'u.email',
+                'u.phone',
+                'u.birth_date'
+            )
+            .select(
+                't.id as id',
+                't.user_id',
+                't.specialization',
+                't.hire_date',
+                't.qualification',
+                'u.name',
+                'u.email',
+                'u.phone',
+                'u.birth_date'
+            )
+            .select(
+                db.raw(
+                    "COALESCE(json_agg(DISTINCT jsonb_build_object('id', s.id, 'name', s.name)) FILTER (WHERE s.id IS NOT NULL), '[]') as subjects"
+                )
+            );
     }
 
     static async update(id, updates) {
@@ -39,6 +112,11 @@ class Teacher {
 
     static async delete(id) {
         return await db('teachers').where({ id }).del();
+    }
+    static async clearSubjects(teacherId, trx = null) {
+        const query = db('teachers_subjects').where('teacher_id', teacherId);
+        if (trx) query.transacting(trx);
+        return await query.del();
     }
     static async getSubjects(id) {
         return await db('subjects as su')

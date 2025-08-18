@@ -9,7 +9,7 @@ module.exports = {
     },
 
     async getTeacher(id) {
-        return await Teacher.findById(id);
+        return await Teacher.findByIdDetailed(id);
     },
 
     async findByUserId(id) {
@@ -17,7 +17,7 @@ module.exports = {
     },
 
     async getAllTeachers() {
-        return await Teacher.findAll();
+        return await Teacher.findAllDetailed();
     },
 
     async updateTeacher(id, updates) {
@@ -26,6 +26,14 @@ module.exports = {
 
     async deleteTeacher(id) {
         return await Teacher.delete(id);
+    },
+
+    async clearAndAttachSubjects(teacherId, subjectIds, trx = null) {
+        await Teacher.clearSubjects(teacherId, trx);
+        if (Array.isArray(subjectIds) && subjectIds.length > 0) {
+            return await Teacher.attachSubjects(teacherId, subjectIds, trx);
+        }
+        return [];
     },
 
     async getSubjects(id) {

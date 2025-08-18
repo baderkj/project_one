@@ -100,15 +100,15 @@ module.exports = {
                 password_hash: hash,
             });
             console.log(user);
-            if (user[0]) {
-                const sendMessage = await userService.sendWhatsAppMessage(
-                    user[0].phone,
-                    `your email is : ${email} 
-    and password is:
-    ${password}`
-                );
-                console.log(sendMessage);
-            }
+            //         if (user[0]) {
+            //             const sendMessage = await userService.sendWhatsAppMessage(
+            //                 user[0].phone,
+            //                 `your email is : ${email}
+            // and password is:
+            // ${password}`
+            //             );
+            //             console.log(sendMessage);
+            //         }
             const userData = await userService.removeHashedPassword(user[0]);
             res.status(201).json(userData);
         } catch (error) {
