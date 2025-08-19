@@ -19,207 +19,161 @@ exports.seed = async function (knex) {
         .returning('*');
 
     const permissionsList = [
-        // user
-        { name: 'create_user' },
-        { name: 'get_user' },
-        { name: 'delete_user' },
-        { name: 'show_users' },
-        { name: 'get_employees' },
-        { name: 'update_user' },
-        { name: 'search_user' },
-        { name: 'paginate_user' },
-        // role
-        { name: 'create_role' },
-        { name: 'show_all_roles' },
-        { name: 'update_role' },
-        { name: 'show_role_permissions' },
-        { name: 'delete_role' },
-        // teacher
-        { name: 'create_teacher' },
-        { name: 'get_teachers' },
-        { name: 'get_teacher_subjects' },
-        { name: 'get_teacher' },
-        { name: 'update_teacher' },
-        { name: 'delete_teacher' },
-        { name: 'get_teacher_schedule' }, //added 3/8/2025
-
-        // subject
-        { name: 'create_subject' },
-        { name: 'get_all_subjects' },
-        { name: 'get_subject' },
-        { name: 'update_subject' },
-        { name: 'delete_subject' },
-        // student
-        { name: 'create_student' },
-        { name: 'get_all_students' },
-        { name: 'get_student_subjects' },
-        { name: 'get_student_class' },
-        { name: 'get_student_archive' },
-        { name: 'get_student' },
-        { name: 'update_student' },
-        { name: 'delete_student' },
-        { name: 'get_student_schedule' }, //added 3/8/2025
-
-        // schedule
-        { name: 'create_schedule' },
-        { name: 'get_all_schedule' },
-        { name: 'get_schedule_classes' },
-        { name: 'get_schedule_subjects' },
-        { name: 'get_periods' },
-        { name: 'get_days' },
-        { name: 'get_schedule' },
-        { name: 'update_scedule' },
-        { name: 'delete_scedule' },
-        // period
-        { name: 'create_period' },
-        { name: 'get_all_periods' },
-        { name: 'get_period' },
-        { name: 'update_period' },
-        { name: 'delete_period' },
-        // day
-        { name: 'create_day' },
-        { name: 'get_all_days' },
-        { name: 'get_day' },
-        { name: 'update_day' },
-        { name: 'delete_day' },
-        // curriculum
-        { name: 'create_curriculum' },
-        { name: 'get_all_curriculums' },
-        { name: 'get_curriculum' },
-        { name: 'update_curriculum' },
-        { name: 'delete_curriculum' },
-        // class
-        { name: 'create_calss' },
-        { name: 'get_all_classes' },
-        { name: 'get_students_in_class' },
-        { name: 'get_class' },
-        { name: 'update_class' },
-        { name: 'get_class_schedule' },
-        { name: 'delete_class' },
-        { name: 'get_class_subjects_with_teachers' },
-        // behavior
-        { name: 'get_all_behaviors' },
-        { name: 'get_behavior' },
-        { name: 'create_behavior' },
-        { name: 'update_behavior' },
-        { name: 'delete_behavior' },
-        { name: 'get_student_behaviors' },
-        // archive
-        { name: 'create_archive' },
-        { name: 'get_all_archives' },
-        { name: 'get_archive' },
-        { name: 'update_archive' },
-        { name: 'delete_archive' },
-        // academic_year
+        // Academic Years
         { name: 'create_academic_year' },
-        { name: 'get_all_academic_years' },
-        { name: 'get_academic_year' },
+        { name: 'get_academic_years' },
         { name: 'update_academic_year' },
         { name: 'delete_academic_year' },
-        // exam
-        { name: 'create_exam' },
-        { name: 'get_all_exam' },
-        { name: 'get_exam_questions' },
-        { name: 'get_exam' },
-        { name: 'get_all_preexam_of_semester' },
-        { name: 'get_all_next_exam' },
-        { name: 'get_all_semesters_by_subject_fot_preexams' },
-        { name: 'update_exam' },
-        { name: 'delete_exam' },
-        // quiz (reuses exam controller with exam_type = quiz)
-        { name: 'get_all_prequiz_of_semester' },
-        { name: 'get_all_next_quiz' },
-        { name: 'get_all_semesters_by_subject_fot_prequizzes' },
-        // question
-        { name: 'create_question' },
-        { name: 'get_all_questions' },
-        { name: 'get_question' },
-        { name: 'update_question' },
-        { name: 'delete_question' },
-        // option
-        { name: 'create_option' },
-        { name: 'get_all_options' },
-        { name: 'get_option' },
-        { name: 'update_option' },
-        { name: 'delete_option' },
-        // exam question
-        { name: 'create_exam_question' },
-        { name: 'get_all_exam_questions' },
-        { name: 'get_exam_question' },
-        { name: 'update_exam_question' },
-        { name: 'delete_exam_question' },
-        // exam attempt
-        { name: 'create_exam_attempt' },
-        { name: 'get_all_exam_attempts' },
-        { name: 'grade_exam' },
-        { name: 'get_all_exam_attempt' },
-        { name: 'update_exam_attempt' },
-        { name: 'delete_exam_attempt' },
-        // answer
+
+        // Answers
         { name: 'create_answer' },
-        { name: 'get_all_answers' },
-        { name: 'get_answer' },
+        { name: 'get_answers' },
         { name: 'update_answer' },
         { name: 'delete_answer' },
-        // attendance students
-        { name: 'create_students_attendance' },
-        { name: 'get_all_students_attendance' },
-        { name: 'get_students_attendance' },
-        { name: 'update_students_attendance' },
-        { name: 'delete_students_attendance' },
-        // attendance employees
+
+        // Archives
+        { name: 'create_archive' },
+        { name: 'get_archives' },
+        { name: 'update_archive' },
+        { name: 'delete_archive' },
+
+        // Attendance - Employees
         { name: 'create_employees_attendance' },
-        { name: 'get_all_employees_attendance' },
         { name: 'get_employees_attendance' },
         { name: 'update_employees_attendance' },
         { name: 'delete_employees_attendance' },
-        // Fcm
+
+        // Attendance - Students
+        { name: 'create_students_attendance' },
+        { name: 'get_students_attendance' },
+        { name: 'update_students_attendance' },
+        { name: 'delete_students_attendance' },
+
+        // Behavior
+        { name: 'create_behavior' },
+        { name: 'get_behaviors' },
+        { name: 'update_behavior' },
+        { name: 'delete_behavior' },
+
+        // Classes
+        { name: 'create_calss' },
+        { name: 'get_classes' },
+        { name: 'update_class' },
+        { name: 'delete_class' },
+
+        // Curriculum
+        { name: 'create_curriculum' },
+        { name: 'get_curriculums' },
+        { name: 'update_curriculum' },
+        { name: 'delete_curriculum' },
+
+        // Days
+        { name: 'create_day' },
+        { name: 'get_days' },
+        { name: 'update_day' },
+        { name: 'delete_day' },
+
+        // Exam Questions
+        { name: 'create_exam_question' },
+        { name: 'get_exam_questions' },
+        { name: 'update_exam_question' },
+        { name: 'delete_exam_question' },
+
+        // Exams
+        { name: 'create_exam' },
+        { name: 'get_exams' },
+        { name: 'get_preexams' },
+        { name: 'get_next_exams' },
+        { name: 'update_exam' },
+        { name: 'delete_exam' },
+
+        // FCM Tokens
         { name: 'create_fcm_token' },
-        { name: 'get_all_fcm_token' },
         { name: 'send_message' },
-        { name: 'get_fcm_token' },
+        { name: 'get_fcm_tokens' },
         { name: 'update_fcm_token' },
         { name: 'delete_fcm_token' },
-        // notification
+
+        // Notifications
         { name: 'create_notification' },
-        { name: 'get_notifications_for_user' },
-        { name: 'get_all_notification' },
-        { name: 'get_notification' },
+        { name: 'get_notifications' },
         { name: 'update_notification' },
-        { name: 'update_notification_to_read' },
         { name: 'delete_notification' },
 
-        // Semester
+        // Options
+        { name: 'create_option' },
+        { name: 'get_options' },
+        { name: 'update_option' },
+        { name: 'delete_option' },
+
+        // Periods
+        { name: 'create_period' },
+        { name: 'get_periods' },
+        { name: 'update_period' },
+        { name: 'delete_period' },
+
+        // Permissions
+        { name: 'create_permission' },
+        { name: 'get_permissions' },
+
+        // Questions
+        { name: 'create_question' },
+        { name: 'get_questions' },
+        { name: 'update_question' },
+        { name: 'delete_question' },
+
+        // Roles
+        { name: 'create_role' },
+        { name: 'get_roles' },
+        { name: 'update_role' },
+        { name: 'delete_role' },
+
+        // Schedules
+        { name: 'create_schedule' },
+        { name: 'get_schedules' },
+        { name: 'update_schedule' },
+        { name: 'delete_schedule' },
+
+        // Semesters
         { name: 'create_semester' },
-        { name: 'get_all_semesters' },
-        { name: 'get_semester' },
+        { name: 'get_semesters' },
         { name: 'update_semester' },
         { name: 'delete_semester' },
 
-        // tuition payment
-        { name: 'create_tuition_payment' },
-        { name: 'bulk_create_payments' },
-        { name: 'get_all_tuition_payments' },
-        { name: 'get_payment_stats' },
-        { name: 'get_payments_by_date_range' },
-        { name: 'get_outstanding_payments' },
-        { name: 'get_tuition_payment' },
-        { name: 'update_tuition_payment' },
-        { name: 'verify_payment' },
-        { name: 'delete_tuition_payment' },
-        { name: 'get_student_payments' },
-        { name: 'get_student_payment_total' },
-        { name: 'get_student_balance' },
-        // permissions
-        { name: 'create_permission' },
-        { name: 'get_all_permissions' },
-        // teachers_subjects
+        // Students
+        { name: 'create_student' },
+        { name: 'get_students' },
+        { name: 'update_student' },
+        { name: 'delete_student' },
+
+        // Subjects
+        { name: 'create_subject' },
+        { name: 'get_subjects' },
+        { name: 'update_subject' },
+        { name: 'delete_subject' },
+
+        // Teachers
+        { name: 'create_teacher' },
+        { name: 'get_teachers' },
+        { name: 'update_teacher' },
+        { name: 'delete_teacher' },
+
+        // Teacher Subjects
         { name: 'create_teachers_subjects' },
-        { name: 'get_all_teachers_subjects' },
-        { name: 'get_teachers_subjects' },
-        { name: 'update_teachers_subjects' },
-        { name: 'delete_teachers_subjects' },
+
+        // Tuition Payments
+        { name: 'create_tuition_payment' },
+        { name: 'get_tuition_payments' },
+        { name: 'update_tuition_payment' },
+        { name: 'delete_tuition_payment' },
+
+        // Users
+        { name: 'create_user' },
+        { name: 'get_users' },
+        { name: 'update_user' },
+        { name: 'delete_user' },
     ];
+
     const permissions = await knex('permissions')
         .insert(permissionsList)
         .returning('*');

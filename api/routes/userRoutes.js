@@ -9,60 +9,56 @@ const hasPermission = require('../../middleware/hasPermission');
 router.post('/signin', userController.signIn);
 router.post('/signout', authMiddleware, userController.signOut);
 router.post(
-  '/',
-  UserValidator,
-  authMiddleware,
-  hasPermission('create_user'),
-  userController.createUser
+    '/',
+    UserValidator,
+    authMiddleware,
+    hasPermission('create_user'),
+    userController.createUser
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('show_users'),
-  userController.getAllUsers
+    '/',
+    authMiddleware,
+    hasPermission('get_users'),
+    userController.getAllUsers
 );
 router.get(
-  '/employees',
-  authMiddleware,
-  hasPermission('get_employees'),
-  userController.getEmployees
+    '/employees',
+    authMiddleware,
+    hasPermission('get_users'),
+    userController.getEmployees
 );
 router.get(
-  '/search/:name',
-  authMiddleware,
-  hasPermission('search_user'),
-  userController.search
+    '/search/:name',
+    authMiddleware,
+    hasPermission('get_users'),
+    userController.search
 );
 router.get(
-  '/paginate',
-  authMiddleware,
-  hasPermission('paginate_user'),
-  userController.paginate
+    '/paginate',
+    authMiddleware,
+    hasPermission('get_users'),
+    userController.paginate
 );
 
+router.get('/current-user', authMiddleware, userController.getUserByToken);
+
 router.get(
-  '/current-user',
-  authMiddleware,
-  // hasPermission('get_user'),
-  userController.getUserByToken
-);
-router.get(
-  '/:id',
-  authMiddleware,
-  // hasPermission('get_user'),
-  userController.getUser
+    '/:id',
+    authMiddleware,
+    hasPermission('get_users'),
+    userController.getUser
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_user'),
-  userController.updateUser
+    '/:id',
+    authMiddleware,
+    hasPermission('update_user'),
+    userController.updateUser
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_user'),
-  userController.deleteUser
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_user'),
+    userController.deleteUser
 );
 
 module.exports = router;

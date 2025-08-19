@@ -16,20 +16,20 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    hasPermission('get_all_subjects'),
+    hasPermission('get_subjects'),
     subjectController.getAllSubjectes
 );
 
 router.get(
     '/list',
     authMiddleware,
-    hasPermission('get_all_subjects'),
+    hasPermission('get_subjects'),
     subjectController.getSubjectsList
 );
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_subject'),
+    hasPermission('get_subjects'),
     subjectController.getSubject
 );
 router.put(

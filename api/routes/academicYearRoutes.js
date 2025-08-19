@@ -18,14 +18,14 @@ router.post(
 router.get(
   '/',
   authMiddleware,
-  hasPermission('get_all_academic_years'),
+  hasPermission('get_academic_years'),
   academicYearController.getAllAcademicYeares
 );
 // router.get('/students', academicYearController.getStudentsInClass);
 router.get(
   '/:id',
   authMiddleware,
-  hasPermission('get_academic_year'),
+  hasPermission('get_academic_years'),
   academicYearController.getAcademicYear
 );
 router.put(

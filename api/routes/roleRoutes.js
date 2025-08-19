@@ -9,20 +9,20 @@ router.post(
     '/',
     roleValidator,
     authMiddleware,
-    // hasPermission('create_role'),
+    hasPermission('create_role'),
     roleController.createRole
 );
 router.get(
     '/',
     authMiddleware,
-    hasPermission('show_all_roles'),
+    hasPermission('get_roles'),
     roleController.getAllRoles
 );
 
 router.get(
     '/employees',
     authMiddleware,
-    hasPermission('show_all_roles'),
+    hasPermission('get_roles'),
     roleController.getAllEmployeesRoles
 );
 
@@ -41,14 +41,14 @@ router.put(
 router.get(
     '/:roleId/permissions',
     authMiddleware,
-    hasPermission('show_role_permissions'),
+    hasPermission('get_permissions'),
     roleController.getRolePermissions
 );
 
 router.delete(
     '/:roleId',
     authMiddleware,
-    // hasPermission('delete_role'),
+    hasPermission('delete_role'),
     roleController.deleteRole
 );
 

@@ -1,40 +1,42 @@
 const express = require('express');
 const router = express.Router();
 const teacherSubectsController = require('../controllers/teacherSubectsController');
-const { teacherSubjectsValidator } = require('../validators/teacherSubjectsValidator');
+const {
+    teacherSubjectsValidator,
+} = require('../validators/teacherSubjectsValidator');
 const authMiddleware = require('../../middleware/authMiddleware');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  teacherSubjectsValidator,
-  authMiddleware,
-  hasPermission('create_teachers_subjects'),
-  teacherSubectsController.createTeachersSubects
+    '/',
+    teacherSubjectsValidator,
+    authMiddleware,
+    hasPermission('create_teachers_subjects'),
+    teacherSubectsController.createTeachersSubects
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_teachers_subjects'),
-  teacherSubectsController.getAllTeachersSubectss
+    '/',
+    authMiddleware,
+    hasPermission('get_subjects'),
+    teacherSubectsController.getAllTeachersSubectss
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_teachers_subjects'),
-  teacherSubectsController.getTeachersSubects
+    '/:id',
+    authMiddleware,
+    hasPermission('get_subjects'),
+    teacherSubectsController.getTeachersSubects
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_teachers_subjects'),
-  teacherSubectsController.updateTeachersSubects
+    '/:id',
+    authMiddleware,
+    hasPermission('update_teacher'),
+    teacherSubectsController.updateTeachersSubects
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_teachers_subjects'),
-  teacherSubectsController.deleteTeachersSubects
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_teacher'),
+    teacherSubectsController.deleteTeachersSubects
 );
 
 module.exports = router;

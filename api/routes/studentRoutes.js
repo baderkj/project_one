@@ -10,50 +10,52 @@ router.post(
     '/',
     studentValidator,
     authMiddleware,
-    // hasPermission('create_student'),
+    hasPermission('create_student'),
     studentController.createStudent
 );
 router.get(
     '/',
     authMiddleware,
-    // hasPermission('get_all_students'),
+    hasPermission('get_students'),
     studentController.getAllStudents
 );
 router.get(
     '/subjects',
     authMiddleware,
-    hasPermission('get_student_subjects'),
+    hasPermission('get_subjects'),
     studentController.getStudentSubjects
 );
 router.get(
     '/subjects-list',
     authMiddleware,
-    hasPermission('get_student_subjects'),
+    hasPermission('get_subjects'),
     studentController.getStudentSubjectsNameList
 );
 router.get(
     '/class',
     authMiddleware,
-    hasPermission('get_student_class'),
+    hasPermission('get_classes'),
     studentController.getClass
 );
 
-router.get('/schedule', 
-  authMiddleware,
-  hasPermission('get_student_schedule'),
-  studentController.getStudentSchedule);
+router.get(
+    '/schedule',
+    authMiddleware,
+    hasPermission('get_schedules'),
+    studentController.getStudentSchedule
+);
 
 router.get(
     '/archive',
     authMiddleware,
-    hasPermission('get_student_archive'),
+    hasPermission('get_archives'),
     studentController.getStudentArchive
 );
 
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_student'),
+    hasPermission('get_students'),
     studentController.getStudent
 );
 

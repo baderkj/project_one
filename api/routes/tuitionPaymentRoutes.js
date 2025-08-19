@@ -23,6 +23,7 @@ router.use(authMiddleware);
 router.post(
     '/',
     createTuitionPaymentValidation,
+    hasPermission('create_tuition_payment'),
     tuitionPaymentController.createTuitionPayment
 );
 
@@ -30,6 +31,7 @@ router.post(
 router.post(
     '/bulk',
     bulkCreatePaymentsValidation,
+    hasPermission('create_tuition_payment'),
     tuitionPaymentController.bulkCreatePayments
 );
 
@@ -37,6 +39,7 @@ router.post(
 router.get(
     '/',
     getAllPaymentsValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getAllTuitionPayments
 );
 
@@ -44,6 +47,7 @@ router.get(
 router.get(
     '/stats',
     paymentStatsValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getPaymentStats
 );
 
@@ -51,16 +55,22 @@ router.get(
 router.get(
     '/date-range',
     dateRangeValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getPaymentsByDateRange
 );
 
 // Get outstanding payments
-router.get('/outstanding', tuitionPaymentController.getOutstandingPayments);
+router.get(
+    '/outstanding',
+    hasPermission('get_tuition_payments'),
+    tuitionPaymentController.getOutstandingPayments
+);
 
 // Get a specific tuition payment by ID
 router.get(
     '/:id',
     getPaymentValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getTuitionPayment
 );
 
@@ -68,6 +78,7 @@ router.get(
 router.put(
     '/:id',
     updateTuitionPaymentValidation,
+    hasPermission('update_tuition_payment'),
     tuitionPaymentController.updateTuitionPayment
 );
 
@@ -75,6 +86,7 @@ router.put(
 router.patch(
     '/:id/verify',
     verifyPaymentValidation,
+    hasPermission('update_tuition_payment'),
     tuitionPaymentController.verifyPayment
 );
 
@@ -82,6 +94,7 @@ router.patch(
 router.delete(
     '/:id',
     getPaymentValidation,
+    hasPermission('delete_tuition_payment'),
     tuitionPaymentController.deleteTuitionPayment
 );
 
@@ -89,6 +102,7 @@ router.delete(
 router.get(
     '/student/:student_id',
     getStudentPaymentsValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getStudentPayments
 );
 
@@ -96,6 +110,7 @@ router.get(
 router.get(
     '/student/:student_id/total',
     getStudentPaymentsValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getStudentPaymentTotal
 );
 
@@ -103,6 +118,7 @@ router.get(
 router.get(
     '/student/:student_id/balance',
     getStudentPaymentsValidation,
+    hasPermission('get_tuition_payments'),
     tuitionPaymentController.getStudentBalance
 );
 

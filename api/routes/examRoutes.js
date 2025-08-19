@@ -16,43 +16,43 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    hasPermission('get_all_exam'),
+    hasPermission('get_exams'),
     examController.getAllExams
 );
 router.get(
     '/student-preexams',
     authMiddleware,
-    hasPermission('get_all_preexam_of_semester'),
+    hasPermission('get_preexams'),
     examController.getAllPreExamsForSemester
 );
 router.get(
     '/student-prequizzes',
     authMiddleware,
-    hasPermission('get_all_preexam_of_semester'),
+    hasPermission('get_preexams'),
     examController.getAllPreQuizzesForSemester
 );
 router.get(
     '/student-nextexams',
     authMiddleware,
-    hasPermission('get_all_next_exam'),
+    hasPermission('get_next_exams'),
     examController.getUpComingExam
 );
 router.get(
     '/student-nextquizzes',
     authMiddleware,
-    hasPermission('get_all_next_exam'),
+    hasPermission('get_next_exams'),
     examController.getUpComingQuiz
 );
 router.get(
     '/subject/:subject_id/semesters',
     authMiddleware,
-    hasPermission('get_all_semesters_by_subject_fot_preexams'),
+    hasPermission('get_preexams'),
     examController.getsemestersBySubjectForPreExam
 );
 router.get(
     '/subject/:subject_id/quiz-semesters',
     authMiddleware,
-    hasPermission('get_all_semesters_by_subject_fot_preexams'),
+    hasPermission('get_preexams'),
     examController.getsemestersBySubjectForPreQuiz
 );
 router.get(
@@ -70,7 +70,7 @@ router.get(
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_exam'),
+    hasPermission('get_exams'),
     examController.getExam
 );
 router.put(

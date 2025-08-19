@@ -7,37 +7,37 @@ const { semesterValidator } = require('../validators/semesterValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  semesterValidator,
-  authMiddleware,
-  hasPermission('create_semester'),
-  semesterController.createSemester
+    '/',
+    semesterValidator,
+    authMiddleware,
+    hasPermission('create_semester'),
+    semesterController.createSemester
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_semesters'),
-  semesterController.getAllSemesters
+    '/',
+    authMiddleware,
+    hasPermission('get_semesters'),
+    semesterController.getAllSemesters
 );
 
 // router.get('/students', academicYearController.getStudentsInClass);
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_semester'),
-  semesterController.getSemester
+    '/:id',
+    authMiddleware,
+    hasPermission('get_semesters'),
+    semesterController.getSemester
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_semester'),
-  semesterController.updateSemester
+    '/:id',
+    authMiddleware,
+    hasPermission('update_semester'),
+    semesterController.updateSemester
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_semester'),
-  semesterController.deleteSemester
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_semester'),
+    semesterController.deleteSemester
 );
 
 //authMiddleware,checkRoles(['admin']),

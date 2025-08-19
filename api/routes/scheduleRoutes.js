@@ -9,36 +9,36 @@ const hasPermission = require('../../middleware/hasPermission');
 const authMiddleware = require('../../middleware/authMiddleware');
 
 router.post(
-  '/',
-  scheduleValidator,
-  authMiddleware,
-  hasPermission('create_schedule'),
-  scheduleController.createSchedule
+    '/',
+    scheduleValidator,
+    authMiddleware,
+    hasPermission('create_schedule'),
+    scheduleController.createSchedule
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_schedule'),
-  scheduleController.getAllSchedules
+    '/',
+    authMiddleware,
+    hasPermission('get_schedules'),
+    scheduleController.getAllSchedules
 );
 
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_schedule'),
-  scheduleController.getSchedule
+    '/:id',
+    authMiddleware,
+    hasPermission('get_schedules'),
+    scheduleController.getSchedule
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_scedule'),
-  scheduleController.updateSchedule
+    '/:id',
+    authMiddleware,
+    hasPermission('update_schedule'),
+    scheduleController.updateSchedule
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_scedule'),
-  scheduleController.deleteSchedule
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_schedule'),
+    scheduleController.deleteSchedule
 );
 
 module.exports = router;

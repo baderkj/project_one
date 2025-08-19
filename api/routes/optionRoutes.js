@@ -7,35 +7,35 @@ const { optionValidator } = require('../validators/optionValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  optionValidator,
-  authMiddleware,
-  hasPermission('create_option'),
-  optionController.createOption
+    '/',
+    optionValidator,
+    authMiddleware,
+    hasPermission('create_option'),
+    optionController.createOption
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_options'),
-  optionController.getAllOptions
+    '/',
+    authMiddleware,
+    hasPermission('get_options'),
+    optionController.getAllOptions
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_option'),
-  optionController.getOption
+    '/:id',
+    authMiddleware,
+    hasPermission('get_options'),
+    optionController.getOption
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_option'),
-  optionController.updateOption
+    '/:id',
+    authMiddleware,
+    hasPermission('update_option'),
+    optionController.updateOption
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_option'),
-  optionController.deleteOption
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_option'),
+    optionController.deleteOption
 );
 
 //authMiddleware,checkRoles(['admin']),

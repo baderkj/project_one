@@ -21,37 +21,37 @@ router.get(
 router.get(
     '/questions',
     authMiddleware,
-    // hasPermission('get_teacher_questions'),
+    hasPermission('get_questions'),
     teacherController.getQuestions
 );
 router.get(
     '/subjects',
     authMiddleware,
-    hasPermission('get_teacher_subjects'),
+    hasPermission('get_subjects'),
     teacherController.getSubjects
 );
 router.get(
     '/students',
     authMiddleware,
-    // hasPermission('get_teacher_students'),
+    hasPermission('get_students'),
     teacherController.getStudents
 );
 router.get(
     '/schedule',
     authMiddleware,
-    // hasPermission('get_teacher_schedule'),
+    hasPermission('get_schedules'),
     teacherController.getTeacherSchedule
 );
 router.get(
     '/classes',
     authMiddleware,
-    // hasPermission('get_teacher_classes'),
+    hasPermission('get_classes'),
     teacherController.getClassesByTeacher
 );
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_teacher'),
+    hasPermission('get_teachers'),
     teacherController.getTeacher
 );
 router.put(
