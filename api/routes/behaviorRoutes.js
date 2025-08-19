@@ -16,14 +16,14 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    hasPermission('get_all_behaviors'),
+    hasPermission('get_behaviors'),
     behaviorController.getAllBehaviors
 );
 
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_behavior'),
+    hasPermission('get_behaviors'),
     behaviorController.getBehavior
 );
 
@@ -44,7 +44,7 @@ router.delete(
 router.get(
     '/me/list',
     authMiddleware,
-    hasPermission('get_student_behaviors'),
+    // hasPermission('get_student_behaviors'),
     behaviorController.getMyBehaviors
 );
 

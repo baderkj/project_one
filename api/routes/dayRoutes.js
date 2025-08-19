@@ -8,35 +8,35 @@ const authMiddleware = require('../../middleware/authMiddleware');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  dayValidator,
-  authMiddleware,
-  hasPermission('create_day'),
-  dayController.createDay
+    '/',
+    dayValidator,
+    authMiddleware,
+    hasPermission('create_day'),
+    dayController.createDay
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_days'),
-  dayController.getAllDays
+    '/',
+    authMiddleware,
+    hasPermission('get_days'),
+    dayController.getAllDays
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_day'),
-  dayController.getDay
+    '/:id',
+    authMiddleware,
+    hasPermission('get_days'),
+    dayController.getDay
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_day'),
-  dayController.updateDay
+    '/:id',
+    authMiddleware,
+    hasPermission('update_day'),
+    dayController.updateDay
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_day'),
-  dayController.deleteDay
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_day'),
+    dayController.deleteDay
 );
 
 module.exports = router;

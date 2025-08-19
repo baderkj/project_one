@@ -16,19 +16,19 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    hasPermission('get_all_questions'),
+    hasPermission('get_questions'),
     questionContoller.getAllQuestions
 );
 router.get(
     '/exam/:exam_id',
     authMiddleware,
-    hasPermission('get_all_exam_questions'),
+    hasPermission('get_questions'),
     questionContoller.getExamQuestions
 );
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_question'),
+    hasPermission('get_questions'),
     questionContoller.getQuestion
 );
 router.put(

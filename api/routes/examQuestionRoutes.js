@@ -7,34 +7,34 @@ const { examValidator } = require('../validators/examValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  authMiddleware,
-  hasPermission('create_exam_question'),
-  examQuestionController.createExamQuestion
+    '/',
+    authMiddleware,
+    hasPermission('create_exam_question'),
+    examQuestionController.createExamQuestion
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_exam_questions'),
-  examQuestionController.getAllExamQuestions
+    '/',
+    authMiddleware,
+    hasPermission('get_exam_questions'),
+    examQuestionController.getAllExamQuestions
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_exam_question'),
-  examQuestionController.getExamQuestion
+    '/:id',
+    authMiddleware,
+    hasPermission('get_exam_questions'),
+    examQuestionController.getExamQuestion
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_exam_question'),
-  examQuestionController.updateExamQuestion
+    '/:id',
+    authMiddleware,
+    hasPermission('update_exam_question'),
+    examQuestionController.updateExamQuestion
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_exam_question'),
-  examQuestionController.deleteExamQuestion
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_exam_question'),
+    examQuestionController.deleteExamQuestion
 );
 
 //authMiddleware,checkRoles(['admin']),

@@ -8,42 +8,42 @@ const { examCorrectValidator } = require('../validators/examCorrectValidator');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  examAttemptValidator,
-  authMiddleware,
-  hasPermission('create_exam_attempt'),
-  examAttemptController.createExamAttempt
+    '/',
+    examAttemptValidator,
+    authMiddleware,
+    // hasPermission('create_exam_attempt'),
+    examAttemptController.createExamAttempt
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_exam_attempts'),
-  examAttemptController.getAllExamAttempts
+    '/',
+    authMiddleware,
+    // hasPermission('get_exam_attempts'),
+    examAttemptController.getAllExamAttempts
 );
 router.get(
-  '/check',
-  authMiddleware,
-  // hasPermission('grade_exam'),
-  examCorrectValidator,
-  examAttemptController.gradeExam
+    '/check',
+    authMiddleware,
+    // hasPermission('grade_exam'),
+    examCorrectValidator,
+    examAttemptController.gradeExam
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_all_exam_attempt'),
-  examAttemptController.getAllExamAttempts
+    '/:id',
+    authMiddleware,
+    // hasPermission('get_exam_attempts'),
+    examAttemptController.getAllExamAttempts
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_exam_attempt'),
-  examAttemptController.updateExamAttempt
+    '/:id',
+    authMiddleware,
+    // hasPermission('update_exam_attempt'),
+    examAttemptController.updateExamAttempt
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_exam_attempt'),
-  examAttemptController.deleteExamAttempt
+    '/:id',
+    authMiddleware,
+    // hasPermission('delete_exam_attempt'),
+    examAttemptController.deleteExamAttempt
 );
 
 //authMiddleware,checkRoles(['admin']),

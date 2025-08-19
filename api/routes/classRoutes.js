@@ -16,38 +16,38 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    hasPermission('get_all_classes'),
+    hasPermission('get_classes'),
     classController.getAllClasses
 );
 
 router.get(
     '/students',
     authMiddleware,
-    hasPermission('get_students_in_class'),
+    hasPermission('get_students'),
     classController.getStudentsInClass
 );
 router.get(
     '/grade_group',
     authMiddleware,
-    // hasPermission('get_classes_grouped_by_grade'),
+    hasPermission('get_classes'),
     classController.getClassesGroupedByGrade
 );
 router.get(
     '/schedule',
     authMiddleware,
-    hasPermission('get_class_schedule'),
+    hasPermission('get_schedules'),
     classController.getClassSchedule
 );
 router.get(
     '/subjects-with-teachers/:id',
     authMiddleware,
-    hasPermission('get_class_subjects_with_teachers'),
+    hasPermission('create_schedule', 'update_schedule'),
     classController.getClassSubjectsWithTeachers
 );
 router.get(
     '/:id',
     authMiddleware,
-    hasPermission('get_class'),
+    hasPermission('get_classes'),
     classController.getClass
 );
 router.put(

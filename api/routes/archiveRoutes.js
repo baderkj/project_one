@@ -7,35 +7,35 @@ const { archiveValidator } = require('../validators/archiveValidaor');
 const hasPermission = require('../../middleware/hasPermission');
 
 router.post(
-  '/',
-  archiveValidator,
-  authMiddleware,
-  hasPermission('create_archive'),
-  archiveController.createArchive
+    '/',
+    archiveValidator,
+    authMiddleware,
+    hasPermission('create_archive'),
+    archiveController.createArchive
 );
 router.get(
-  '/',
-  authMiddleware,
-  hasPermission('get_all_archives'),
-  archiveController.getAllArchives
+    '/',
+    authMiddleware,
+    hasPermission('get_archives'),
+    archiveController.getAllArchives
 );
 router.get(
-  '/:id',
-  authMiddleware,
-  hasPermission('get_archive'),
-  archiveController.getArchive
+    '/:id',
+    authMiddleware,
+    hasPermission('get_archives'),
+    archiveController.getArchive
 );
 router.put(
-  '/:id',
-  authMiddleware,
-  hasPermission('update_archive'),
-  archiveController.updateArchive
+    '/:id',
+    authMiddleware,
+    hasPermission('update_archive'),
+    archiveController.updateArchive
 );
 router.delete(
-  '/:id',
-  authMiddleware,
-  hasPermission('delete_archive'),
-  archiveController.deleteArchive
+    '/:id',
+    authMiddleware,
+    hasPermission('delete_archive'),
+    archiveController.deleteArchive
 );
 
 //authMiddleware,checkRoles(['admin']),
