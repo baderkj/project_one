@@ -77,6 +77,26 @@ module.exports = {
 
     async updateSubject(req, res) {
         try {
+            const { level_grade } = req.body || {};
+
+            if (level_grade !== undefined) {
+                const curriculum = await db('curriculums')
+                    .select('*')
+                    .where({
+                        level_grade: String(level_grade),
+                        is_active: true,
+                    })
+                    .first();
+                if (!curriculum) {
+                    return res.status(404).json({
+                        error: 'Curriculum not found for provided level_grade',
+                    });
+                }
+
+                req.body.curriculum_id = curriculum.id;
+                delete req.body.level_grade;
+            }
+
             const Subject = await subjectService.updateSubject(
                 req.params.id,
                 req.body
