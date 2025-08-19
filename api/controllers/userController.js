@@ -48,7 +48,7 @@ module.exports = {
                     roleId: user.role_id,
                 },
                 process.env.JWT_SECRET,
-                { expiresIn: '1h' }
+                { expiresIn: '10d' }
             );
 
             // 4. Return user data (without password)
