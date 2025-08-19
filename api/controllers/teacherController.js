@@ -5,6 +5,7 @@ const roleService = require('../services/roleService');
 
 const bcrypt = require('bcrypt-nodejs');
 const { getSubject } = require('./subjectController');
+const { toDateOnly } = require('../utils/dateUtils');
 module.exports = {
     async createTeacher(req, res) {
         try {
@@ -91,7 +92,13 @@ module.exports = {
             const teacher = await teacherService.getTeacher(req.params.id);
             if (!teacher)
                 return res.status(404).json({ error: 'Teacher not found' });
-            res.json(teacher);
+
+            const formatted = {
+                ...teacher,
+                birth_date: toDateOnly(teacher.birth_date),
+                hire_date: toDateOnly(teacher.hire_date),
+            };
+            res.json(formatted);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -100,7 +107,12 @@ module.exports = {
     async getAllTeachers(req, res) {
         try {
             const teacher = await teacherService.getAllTeachers();
-            res.json(teacher);
+            const formatted = teacher.map((t) => ({
+                ...t,
+                birth_date: toDateOnly(t.birth_date),
+                hire_date: toDateOnly(t.hire_date),
+            }));
+            res.json(formatted);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
