@@ -129,4 +129,22 @@ module.exports = {
             res.status(500).json({ error: err.message });
         }
     },
+    async updateRoleName(req, res) {
+        try {
+            const { roleId } = req.params;
+            const { name } = req.body;
+            if (!name || typeof name !== 'string') {
+                return res.status(400).json({ error: 'Invalid role name' });
+            }
+            const updated = await roleService.updateRoleName(
+                parseInt(roleId, 10),
+                name
+            );
+            if (!updated)
+                return res.status(404).json({ error: 'Role not found' });
+            res.status(200).json(updated);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    },
 };

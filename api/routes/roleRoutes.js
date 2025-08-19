@@ -29,8 +29,14 @@ router.get(
 router.put(
     '/update-role',
     authMiddleware,
-    // hasPermission('update_role'),
+    hasPermission('update_role'),
     roleController.updatePermissions
+);
+router.put(
+    '/:roleId',
+    authMiddleware,
+    hasPermission('update_role'),
+    roleController.updateRoleName
 );
 router.get(
     '/:roleId/permissions',

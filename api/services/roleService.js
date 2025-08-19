@@ -56,4 +56,9 @@ module.exports = {
     async deleteRole(id) {
         return await Role.delete(id);
     },
+
+    async updateRoleName(id, name) {
+        const [role] = await Role.update(id, { name });
+        return role;
+    },
 };

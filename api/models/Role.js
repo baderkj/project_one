@@ -28,6 +28,10 @@ class Role {
     static async delete(id) {
         return await db('roles').where({ id }).del();
     }
+
+    static async update(id, updates) {
+        return await db('roles').where({ id }).update(updates).returning('*');
+    }
 }
 
 module.exports = Role;
