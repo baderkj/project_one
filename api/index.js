@@ -58,5 +58,6 @@ router.use('/notifications', notificationRoutes);
 router.use('/tuition-payments', tuitionPaymentRoutes);
 router.use('/teachers_subjects', teacherSubjectsRoutes);
 router.use('/behaviors', behaviorRoutes);
+router.use('/permissions', permissionRoutes);
 
 module.exports = router;
