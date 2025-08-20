@@ -6,24 +6,26 @@ module.exports = {
     async createClass(req, res) {
         try {
             const classData = req.body;
+            // Map frontend field names to database field names
+            const dbData = {
+                class_name: classData.name,
+                floor_number: classData.floor,
+                level_grade: classData.grade,
+            };
+
             // Validate required fields first
             if (
-                !(
-                    classData?.class_name ||
-                    classData?.floor_number === undefined
-                )
+                !dbData.class_name ||
+                dbData.floor_number === undefined ||
+                !dbData.level_grade
             ) {
-                throw new Error('class_name and floor_number are required');
+                throw new Error('name, floor, and grade are required');
             }
 
             return await db.transaction(async (trx) => {
                 // 1. Create the class with validated data
                 const [classId] = await trx('classes')
-                    .insert({
-                        class_name: classData.class_name,
-                        floor_number: classData.floor_number,
-                        // Include other required fields as needed
-                    })
+                    .insert(dbData)
                     .returning('id');
 
                 // 2. Get all days and periods from database
@@ -89,10 +91,14 @@ module.exports = {
 
     async updateClass(req, res) {
         try {
-            const Class = await classService.updateClass(
-                req.params.id,
-                req.body
-            );
+            // Map frontend field names to database field names
+            const dbData = {
+                name: req.body.name,
+                floor: req.body.floor,
+                grade: req.body.grade,
+            };
+
+            const Class = await classService.updateClass(req.params.id, dbData);
             if (!Class || Class.length == 0)
                 return res.status(404).json({ error: 'Class not found' });
             res.json(Class);

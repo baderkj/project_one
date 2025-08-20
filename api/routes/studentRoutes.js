@@ -31,6 +31,14 @@ router.get(
     hasPermission('get_subjects'),
     studentController.getStudentSubjectsNameList
 );
+
+router.get(
+    '/class/:classId',
+    authMiddleware,
+    hasPermission('get_students'),
+    studentController.getStudentsByClass
+);
+
 router.get(
     '/class',
     authMiddleware,

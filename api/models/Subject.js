@@ -10,7 +10,14 @@ class Subject {
     }
 
     static async findAll() {
-        return await db('subjects').select('*');
+        return await db('subjects')
+            .join('curriculums', 'subjects.curriculum_id', 'curriculums.id')
+            .select(
+                'subjects.id',
+                'subjects.name',
+                'subjects.curriculum_id',
+                'curriculums.level_grade as grade'
+            );
     }
 
     static async update(id, updates) {

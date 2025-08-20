@@ -2,15 +2,42 @@ const { db } = require('../../config/db');
 
 class Class {
     static async create(classData) {
-        return await db('classes').insert(classData).returning('*');
+        // Map frontend field names to database field names
+        const dbData = {
+            class_name: classData.name,
+            floor_number: classData.floor,
+            level_grade: classData.grade,
+        };
+
+        return await db('classes')
+            .insert(dbData)
+            .returning([
+                'id',
+                'class_name as name',
+                'floor_number as floor',
+                'level_grade as grade',
+            ]);
     }
 
     static async findById(id) {
-        return await db('classes').where({ id }).first();
+        return await db('classes')
+            .where({ id })
+            .select(
+                'id',
+                'class_name as name',
+                'floor_number as floor',
+                'level_grade as grade'
+            )
+            .first();
     }
 
     static async findAll() {
-        return await db('classes').select('*');
+        return await db('classes').select(
+            'id',
+            'class_name as name',
+            'floor_number as floor',
+            'level_grade as grade'
+        );
     }
 
     static async getClassesGroupedByGrade() {
@@ -50,7 +77,22 @@ class Class {
     }
 
     static async update(id, updates) {
-        return await db('classes').where({ id }).update(updates).returning('*');
+        // Map frontend field names to database field names
+        const dbUpdates = {
+            class_name: updates.name,
+            floor_number: updates.floor,
+            level_grade: updates.grade,
+        };
+
+        return await db('classes')
+            .where({ id })
+            .update(dbUpdates)
+            .returning([
+                'id',
+                'class_name as name',
+                'floor_number as floor',
+                'level_grade as grade',
+            ]);
     }
 
     static async delete(id) {
