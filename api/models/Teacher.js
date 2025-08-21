@@ -215,8 +215,32 @@ class Teacher {
             .distinct('sc.class_id');
 
         return await db('students as st')
+            .join('users as u', 'u.id', 'st.user_id')
+            .join('classes as c', 'c.id', 'st.class_id')
+            .leftJoin('attendance_students as att', 'att.student_id', 'st.id')
             .whereIn('st.class_id', classIdsQuery)
-            .select('st.*');
+            .select(
+                'st.id',
+                'st.grade_level',
+                'u.name as student_name',
+                'c.class_name',
+                'c.level_grade',
+                db.raw(`
+                    CASE 
+                        WHEN COUNT(att.id) = 0 THEN 0
+                        ELSE ROUND(
+                            (COUNT(CASE WHEN att.status = 'present' THEN 1 END) * 100.0 / COUNT(att.id)), 2
+                        )
+                    END as attendance_percentage
+                `)
+            )
+            .groupBy(
+                'st.id',
+                'st.grade_level',
+                'u.name',
+                'c.class_name',
+                'c.level_grade'
+            );
     }
     static async getClassesByTeacher(teacherId) {
         try {
