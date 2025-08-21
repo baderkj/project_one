@@ -2,41 +2,31 @@ const { db } = require('../../config/db');
 
 class Class {
     static async create(classData) {
-        // Map frontend field names to database field names
+        // Use the new field names directly
         const dbData = {
-            class_name: classData.name,
-            floor_number: classData.floor,
-            level_grade: classData.grade,
+            class_name: classData.class_name,
+            floor_number: classData.floor_number,
+            level_grade: classData.level_grade,
         };
 
         return await db('classes')
             .insert(dbData)
-            .returning([
-                'id',
-                'class_name as name',
-                'floor_number as floor',
-                'level_grade as grade',
-            ]);
+            .returning(['id', 'class_name', 'floor_number', 'level_grade']);
     }
 
     static async findById(id) {
         return await db('classes')
             .where({ id })
-            .select(
-                'id',
-                'class_name as name',
-                'floor_number as floor',
-                'level_grade as grade'
-            )
+            .select('id', 'class_name', 'floor_number', 'level_grade')
             .first();
     }
 
     static async findAll() {
         return await db('classes').select(
             'id',
-            'class_name as name',
-            'floor_number as floor',
-            'level_grade as grade'
+            'class_name',
+            'floor_number',
+            'level_grade'
         );
     }
 
@@ -77,22 +67,17 @@ class Class {
     }
 
     static async update(id, updates) {
-        // Map frontend field names to database field names
+        // Use the new field names directly
         const dbUpdates = {
-            class_name: updates.name,
-            floor_number: updates.floor,
-            level_grade: updates.grade,
+            class_name: updates.class_name,
+            floor_number: updates.floor_number,
+            level_grade: updates.level_grade,
         };
 
         return await db('classes')
             .where({ id })
             .update(dbUpdates)
-            .returning([
-                'id',
-                'class_name as name',
-                'floor_number as floor',
-                'level_grade as grade',
-            ]);
+            .returning(['id', 'class_name', 'floor_number', 'level_grade']);
     }
 
     static async canDelete(id) {
@@ -194,8 +179,33 @@ class Class {
     static async getStudentsInClass(id) {
         return await db('classes as c')
             .join('students as s', 's.class_id', 'c.id')
-            .where('c.id', id) // Changed from where({id:id}) to be more explicit
-            .select('s.*');
+            .join('users as u', 'u.id', 's.user_id')
+            .leftJoin('attendance_students as att', 'att.student_id', 's.id')
+            .where('c.id', id)
+            .select(
+                's.id',
+                's.grade_level',
+                's.class_id',
+                'u.name as student_name',
+                'c.class_name',
+                'c.level_grade',
+                db.raw(`
+                    CASE 
+                        WHEN COUNT(att.id) = 0 THEN 0
+                        ELSE ROUND(
+                            (COUNT(CASE WHEN att.status = 'present' THEN 1 END) * 100.0 / COUNT(att.id)), 2
+                        )
+                    END as attendance_percentage
+                `)
+            )
+            .groupBy(
+                's.id',
+                's.grade_level',
+                's.class_id',
+                'u.name',
+                'c.class_name',
+                'c.level_grade'
+            );
     }
 
     static async getClassSchedule(id) {

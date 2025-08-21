@@ -19,7 +19,9 @@ module.exports = {
                 dbData.floor_number === undefined ||
                 !dbData.level_grade
             ) {
-                throw new Error('name, floor, and grade are required');
+                throw new Error(
+                    'class_name, floor_number, and level_grade are required'
+                );
             }
 
             return await db.transaction(async (trx) => {
@@ -91,11 +93,11 @@ module.exports = {
 
     async updateClass(req, res) {
         try {
-            // Map frontend field names to database field names
+            // Use the new field names directly
             const dbData = {
-                name: req.body.name,
-                floor: req.body.floor,
-                grade: req.body.grade,
+                class_name: req.body.class_name,
+                floor_number: req.body.floor_number,
+                level_grade: req.body.level_grade,
             };
 
             const Class = await classService.updateClass(req.params.id, dbData);

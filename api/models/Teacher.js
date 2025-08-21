@@ -221,8 +221,13 @@ class Teacher {
             .whereIn('st.class_id', classIdsQuery)
             .select(
                 'st.id',
+                'st.user_id',
+                'st.class_id',
                 'st.grade_level',
                 'u.name as student_name',
+                'u.email',
+                'u.phone',
+                'u.birth_date',
                 'c.class_name',
                 'c.level_grade',
                 db.raw(`
@@ -236,8 +241,13 @@ class Teacher {
             )
             .groupBy(
                 'st.id',
+                'st.user_id',
+                'st.class_id',
                 'st.grade_level',
                 'u.name',
+                'u.email',
+                'u.phone',
+                'u.birth_date',
                 'c.class_name',
                 'c.level_grade'
             );
