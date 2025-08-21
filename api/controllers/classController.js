@@ -8,9 +8,9 @@ module.exports = {
             const classData = req.body;
             // Map frontend field names to database field names
             const dbData = {
-                class_name: classData.name,
-                floor_number: classData.floor,
-                level_grade: classData.grade,
+                class_name: classData.class_name,
+                floor_number: classData.floor_number,
+                level_grade: classData.level_grade,
             };
 
             // Validate required fields first
