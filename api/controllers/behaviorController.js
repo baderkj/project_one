@@ -1,6 +1,8 @@
 const behaviorService = require('../services/behaviorService');
 const studentService = require('../services/studentService');
 const { validationResult } = require('express-validator');
+const { toDateOnly } = require('../utils/dateUtils');
+const { stripSensitive } = require('../utils/sanitize');
 
 module.exports = {
     async createBehavior(req, res) {
@@ -9,8 +11,9 @@ module.exports = {
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const { student_id, description, date, type } = req.body;
+            const { student_id, description, type } = req.body;
             const created_by = req.user.id;
+            const date = new Date(); // Set date to current date
 
             const behavior = await behaviorService.createBehavior({
                 student_id,
@@ -30,6 +33,7 @@ module.exports = {
             const behavior = await behaviorService.getBehavior(req.params.id);
             if (!behavior)
                 return res.status(404).json({ error: 'Behavior not found' });
+
             res.json(behavior);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -79,7 +83,11 @@ module.exports = {
             const behaviors = await behaviorService.getBehaviorsByStudentId(
                 student.id
             );
-            res.json(behaviors);
+            const formatted = behaviors.map((behavior) => ({
+                ...behavior,
+                date: toDateOnly(behavior.date),
+            }));
+            res.json(stripSensitive(formatted));
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

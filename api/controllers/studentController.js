@@ -1,6 +1,7 @@
 const studentService = require('../services/studentService');
 const userService = require('../services/userService');
 const roleService = require('../services/roleService');
+const ExcelService = require('../services/excelService');
 const { validationResult } = require('express-validator');
 const { db } = require('../../config/db');
 
@@ -265,6 +266,186 @@ module.exports = {
             res.json(students);
         } catch (error) {
             res.status(500).json({ error: error.message });
+        }
+    },
+
+    async createStudentsFromExcel(req, res) {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            const filePath = req.file.path;
+
+            // Read and parse Excel file
+            const students = await ExcelService.readExcelFile(filePath);
+
+            // Validate student data
+            const validation = ExcelService.validateStudentData(students);
+
+            if (validation.errors.length > 0) {
+                // Clean up the uploaded file
+                await ExcelService.cleanupFile(filePath);
+
+                return res.status(400).json({
+                    error: 'Validation errors found in Excel file',
+                    errors: validation.errors,
+                    message: 'Please fix the errors and upload again',
+                });
+            }
+
+            if (validation.validStudents.length === 0) {
+                await ExcelService.cleanupFile(filePath);
+                return res.status(400).json({
+                    error: 'No valid student data found in Excel file',
+                });
+            }
+
+            // Get student role
+            const role = await roleService.getRoleByName('student');
+            if (!role || role.length === 0) {
+                await ExcelService.cleanupFile(filePath);
+                return res
+                    .status(400)
+                    .json({ error: 'Student role not found' });
+            }
+
+            const results = {
+                created: [],
+                errors: [],
+                totalProcessed: validation.validStudents.length,
+            };
+
+            // Process each valid student
+            for (const studentData of validation.validStudents) {
+                try {
+                    // Check if user already exists
+                    const existingUser = await userService.getUserByEmail(
+                        studentData.email
+                    );
+                    if (existingUser) {
+                        results.errors.push({
+                            email: studentData.email,
+                            error: 'User with this email already exists',
+                        });
+                        continue;
+                    }
+
+                    // Get curriculum ID
+                    const curriculum = await studentService.getCurriculumId(
+                        studentData.grade_level
+                    );
+                    if (!curriculum) {
+                        results.errors.push({
+                            email: studentData.email,
+                            error: `No curriculum found for grade level: ${studentData.grade_level}`,
+                        });
+                        continue;
+                    }
+
+                    // Generate password and hash
+                    const password = userService.generateRandomPassword();
+                    const hash = bcrypt.hashSync(password);
+
+                    // Create user and student within transaction
+                    const result = await db.transaction(async (trx) => {
+                        // Create user
+                        const user = await userService.createUser(
+                            {
+                                name: studentData.name,
+                                birth_date: studentData.birth_date,
+                                email: studentData.email,
+                                phone: studentData.phone,
+                                role_id: role[0].id,
+                                password_hash: hash,
+                            },
+                            trx
+                        );
+
+                        // Create student
+                        const student = await studentService.createStudent(
+                            {
+                                user_id: user[0].id,
+                                class_id: studentData.class_id,
+                                curriculum_id: curriculum.id,
+                                grade_level: studentData.grade_level,
+                            },
+                            trx
+                        );
+
+                        // Handle tuition payment setup
+                        const today = new Date().toISOString().split('T')[0];
+                        let currentAcademicYear = await db('academic_years')
+                            .where('start_year', '<=', today)
+                            .andWhere('end_year', '>=', today)
+                            .orderBy('start_year', 'desc')
+                            .first()
+                            .transacting(trx);
+
+                        if (!currentAcademicYear) {
+                            currentAcademicYear = await db('academic_years')
+                                .orderBy('start_year', 'desc')
+                                .first()
+                                .transacting(trx);
+                        }
+
+                        if (currentAcademicYear) {
+                            const fullTuition =
+                                Number(currentAcademicYear.full_tuition) || 0;
+                            const discount =
+                                studentData.discount_percentage || 0;
+                            const remainingTuition = Number(
+                                (fullTuition * (1 - discount / 100)).toFixed(2)
+                            );
+
+                            await db('archives')
+                                .insert({
+                                    student_id: student[0].id,
+                                    academic_year_id: currentAcademicYear.id,
+                                    remaining_tuition: remainingTuition,
+                                })
+                                .transacting(trx);
+                        }
+
+                        return { user: user[0], student: student[0] };
+                    });
+
+                    results.created.push({
+                        email: studentData.email,
+                        name: studentData.name,
+                        password: password,
+                    });
+                } catch (error) {
+                    results.errors.push({
+                        email: studentData.email,
+                        error: error.message,
+                    });
+                }
+            }
+
+            // Clean up the uploaded file
+            await ExcelService.cleanupFile(filePath);
+
+            // Return results
+            res.status(200).json({
+                message: 'Bulk student creation completed',
+                results: results,
+                summary: {
+                    totalProcessed: results.totalProcessed,
+                    successfullyCreated: results.created.length,
+                    errors: results.errors.length,
+                },
+            });
+        } catch (error) {
+            // Clean up file in case of error
+            if (req.file) {
+                await ExcelService.cleanupFile(req.file.path);
+            }
+
+            res.status(500).json({
+                error: 'Error processing Excel file',
+                details: error.message,
+            });
         }
     },
 };

@@ -11,6 +11,10 @@ class User {
         return await db('users').where({ id }).first();
     }
 
+    static async findByEmail(email) {
+        return await db('users').where({ email }).first();
+    }
+
     static async findAll() {
         return await db('users').select(
             'id',

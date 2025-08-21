@@ -5,6 +5,7 @@ const { checkRoles } = require('../../middleware/roleMiddleware');
 const authMiddleware = require('../../middleware/authMiddleware');
 const { studentValidator } = require('../validators/studentValidator');
 const hasPermission = require('../../middleware/hasPermission');
+const { uploadMiddleware } = require('../../middleware/uploadMiddleware');
 
 router.post(
     '/',
@@ -12,6 +13,14 @@ router.post(
     authMiddleware,
     hasPermission('create_student'),
     studentController.createStudent
+);
+
+router.post(
+    '/bulk-upload',
+    authMiddleware,
+    hasPermission('create_student'),
+    uploadMiddleware,
+    studentController.createStudentsFromExcel
 );
 router.get(
     '/',
