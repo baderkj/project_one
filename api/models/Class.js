@@ -95,8 +95,100 @@ class Class {
             ]);
     }
 
+    static async canDelete(id) {
+        try {
+            // Check if the class exists
+            const classExists = await db('classes').where({ id }).first();
+            if (!classExists) {
+                return { canDelete: false, reason: 'Class not found' };
+            }
+
+            // Check if there are any students in this class
+            const studentsInClass = await db('students')
+                .where({ class_id: id })
+                .count('* as count')
+                .first();
+
+            if (parseInt(studentsInClass.count) > 0) {
+                return {
+                    canDelete: false,
+                    reason: 'Cannot delete class: There are students assigned to this class. Please remove all students first.',
+                    studentCount: parseInt(studentsInClass.count),
+                };
+            }
+
+            // Count schedules for this class
+            const scheduleCount = await db('schedules')
+                .where({ class_id: id })
+                .count('* as count')
+                .first();
+
+            return {
+                canDelete: true,
+                reason: 'Class can be deleted safely',
+                scheduleCount: parseInt(scheduleCount.count),
+            };
+        } catch (error) {
+            console.error(
+                `Error checking if class ${id} can be deleted:`,
+                error
+            );
+            return {
+                canDelete: false,
+                reason: 'Error checking deletion status',
+            };
+        }
+    }
+
     static async delete(id) {
-        return await db('classes').where({ id }).del();
+        return await db.transaction(async (trx) => {
+            try {
+                // First, check if the class exists
+                const classExists = await trx('classes').where({ id }).first();
+                if (!classExists) {
+                    throw new Error('Class not found');
+                }
+
+                // Check if there are any students in this class
+                const studentsInClass = await trx('students')
+                    .where({ class_id: id })
+                    .count('* as count')
+                    .first();
+
+                if (parseInt(studentsInClass.count) > 0) {
+                    throw new Error(
+                        'Cannot delete class: There are students assigned to this class. Please remove all students first.'
+                    );
+                }
+
+                // Count schedules for this class (for logging)
+                const scheduleCount = await trx('schedules')
+                    .where({ class_id: id })
+                    .count('* as count')
+                    .first();
+
+                console.log(
+                    `Deleting class ${id} with ${scheduleCount.count} schedule entries`
+                );
+
+                // Delete all schedules for this class
+                const deletedSchedules = await trx('schedules')
+                    .where({ class_id: id })
+                    .del();
+                console.log(
+                    `Deleted ${deletedSchedules} schedule entries for class ${id}`
+                );
+
+                // Now delete the class
+                const deletedClass = await trx('classes').where({ id }).del();
+                console.log(`Deleted class ${id}`);
+
+                return deletedClass;
+            } catch (error) {
+                console.error(`Error deleting class ${id}:`, error);
+                throw error;
+            }
+        });
     }
 
     static async getStudentsInClass(id) {
