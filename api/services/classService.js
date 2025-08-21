@@ -24,6 +24,11 @@ module.exports = {
     async deleteClass(id) {
         return await Class.delete(id);
     },
+
+    async canDeleteClass(id) {
+        return await Class.canDelete(id);
+    },
+
     async getStudentsInClass(id) {
         return await Class.getStudentsInClass(id);
     },

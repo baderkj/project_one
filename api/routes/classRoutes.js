@@ -63,5 +63,12 @@ router.delete(
     classController.deleteClass
 );
 
+router.get(
+    '/:id/can-delete',
+    authMiddleware,
+    hasPermission('delete_class'),
+    classController.canDeleteClass
+);
+
 //authMiddleware,checkRoles(['admin']),
 module.exports = router;

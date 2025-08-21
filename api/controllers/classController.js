@@ -112,7 +112,26 @@ module.exports = {
             const result = await classService.deleteClass(req.params.id);
             if (!result)
                 return res.status(404).json({ error: 'Class not found' });
-            res.status(200).json({ message: 'deleted successfuly' });
+            res.status(200).json({ message: 'Class deleted successfully' });
+        } catch (error) {
+            // Handle specific error for students in class
+            if (
+                error.message.includes(
+                    'Cannot delete class: There are students assigned to this class'
+                )
+            ) {
+                return res.status(400).json({
+                    error: 'Cannot delete class: There are students assigned to this class. Please remove all students first.',
+                });
+            }
+            res.status(500).json({ error: error.message });
+        }
+    },
+
+    async canDeleteClass(req, res) {
+        try {
+            const result = await classService.canDeleteClass(req.params.id);
+            res.json(result);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
