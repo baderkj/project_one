@@ -11,24 +11,38 @@ class Student {
         return await db('students').where({ id }).first();
     }
 
+    static async findByUserId(user_id) {
+        return await db('students').where({ user_id }).first();
+    }
 
-  static async findByUserId(user_id) {
-    return await db('students').where({ user_id }).first();
-  }
+    static async getCurriculumId(grade_level) {
+        return await db('curriculums')
+            .where({ level_grade: grade_level, is_active: true })
+            .first();
+    }
+    static async findByEmail(email, trx = null) {
+        const user = await db('users').where({ email }).first();
+        const query = db('students').where({ user_id: user.id }).first();
+        if (trx) query.transacting(trx);
+        return query;
+    }
+    static async findAll() {
+        return await db('students').select('*');
+    }
 
-  static async getCurriculumId(grade_level) {
-    return await db('curriculums').where({ level_grade:grade_level,is_active:true }).first();
-  }
-  static async findByEmail(email, trx = null) {
-    const user= await db('users').where({email}).first();
-    const query =  db('students').where({ user_id:user.id }).first();
-    if (trx) query.transacting(trx);
-    return query;
-}
-  static async findAll() {
-    return await db('students').select('*') ;
-  }
-
+    static async findByClassId(classId) {
+        return await db('students as s')
+            .join('users as u', 's.user_id', 'u.id')
+            .where('s.class_id', classId)
+            .select(
+                's.id',
+                'u.name',
+                'u.email',
+                'u.phone',
+                'u.birth_date',
+                's.class_id'
+            );
+    }
 
     static async update(id, updates) {
         return await db('students')
@@ -58,45 +72,48 @@ class Student {
             .where('s.id', id) // Changed from where({id:id}) to be more explicit
             .select('s.*', 'a.*');
     }
-    static async getStudentSchedule(id) {   
+    static async getStudentSchedule(id) {
+        const scheduleEntries = await db('schedules as sc')
+            .join('students as st', 'st.class_id', 'sc.class_id')
+            .join('days as d', 'd.id', 'sc.day_id')
+            .join('periods as p', 'p.id', 'sc.period_id')
+            .leftJoin('subjects as su', 'su.id', 'sc.subject_id')
+            .where('st.id', id)
+            .select(
+                'p.id as period_id',
+                'p.start_time',
+                'p.end_time',
+                'd.id as day_id',
+                'd.name as day_name',
+                'su.name as subject_name'
+            )
+            .orderBy('d.id', 'asc') // Ensure days are ordered
+            .orderBy('p.start_time', 'asc');
 
-    const scheduleEntries = await db('schedules as sc')
-      .join('students as st', 'st.class_id', 'sc.class_id')
-      .join('days as d', 'd.id', 'sc.day_id')
-      .join('periods as p', 'p.id', 'sc.period_id')
-      .leftJoin('subjects as su', 'su.id', 'sc.subject_id')
-      .where('st.id', id)
-      .select('p.id as period_id', 'p.start_time', 'p.end_time', 'd.id as day_id', 'd.name as day_name', 'su.name as subject_name')
-      .orderBy('d.id', 'asc') // Ensure days are ordered
-      .orderBy('p.start_time', 'asc'); 
-      
-    console.log(scheduleEntries)
+        console.log(scheduleEntries);
 
-    // Group by day
-    const scheduleByDay = {};
-    scheduleEntries.forEach(entry => {
-      if (!scheduleByDay[entry.day_name]) {
-        scheduleByDay[entry.day_name] = {
-          day_id: entry.day_id,
-          day_name: entry.day_name,
-          subjects: []
-        };
-      }
-      
-      scheduleByDay[entry.day_name].subjects.push({
-        period_id: entry.id,
-        start_time: entry.start_time,
-        end_time: entry.end_time,
-        subject_name: entry.subject_name
-      });
-    });
-    
-    // Convert to array format if preferred
-    return Object.values(scheduleByDay);
-  }
+        // Group by day
+        const scheduleByDay = {};
+        scheduleEntries.forEach((entry) => {
+            if (!scheduleByDay[entry.day_name]) {
+                scheduleByDay[entry.day_name] = {
+                    day_id: entry.day_id,
+                    day_name: entry.day_name,
+                    subjects: [],
+                };
+            }
 
+            scheduleByDay[entry.day_name].subjects.push({
+                period_id: entry.id,
+                start_time: entry.start_time,
+                end_time: entry.end_time,
+                subject_name: entry.subject_name,
+            });
+        });
 
-
+        // Convert to array format if preferred
+        return Object.values(scheduleByDay);
+    }
 }
 
 module.exports = Student;
