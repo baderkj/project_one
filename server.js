@@ -21,9 +21,9 @@ const message = {
     notification: {
         title: 'ttil',
 
-        body: 'abd nigga',
+        body: 'abd sdfasdnigga',
     },
-    token: 'c5oIOoKKy3XSyvuN2VFk6M:APA91bFkJzGWdIjoeJItq2prFtZbSeKrQGJ7XNsLYx6RVyPpuuVwBzH1DAPFuC9Et9iIZFOHupUx4YSKdYkkLCvxGopUfLkGetjKolHB5g5zrRlDtw-nOWQ',
+    token: 'f5vjrD8YdugkOR1z-Bz-XY:APA91bFi-z0XmA58Y3ffdhJQHyP6cGuO-frEQ2-SrVKYRBVyBuMeJq6v6XdVqNUSyesjEM0pgs2OFEpd21VoTzStYz6RFSfTLeroncdAbV7i92VLzexPVC4',
 
     // token: 'fXGW_K3eUHy0Uzxcal5hDE:APA91bEpouIwNloMF71qh5mGYeHDhWmJ9tMNg-nNA3oC-7axbyd7QLkx0pTIsj5W0VynSW6zLCh883Mj2ljPSP5GL0KDHKi-OGPm2NQxQxp39J3-gWBLxO8'
 };

@@ -244,7 +244,7 @@ module.exports = {
                     'announced',
                     'name as subject_name',
                     'resources as subject_resources',
-                    'teacher_id',
+                    // 'teacher_id',
                     'curriculum_id'
                 );
             return res.status(200).json(exams);
@@ -329,7 +329,7 @@ module.exports = {
                 .where('exams.subject_id', subject_id)
                 .where('exams.announced', true)
                 .where('exams.end_datetime', '<=', db.fn.now())
-                .andWhere('exams.exam_type', 'quiz')
+                .where('exams.exam_type', 'quiz')
                 .select(
                     'semesters.id as semesters_id',
                     'semesters.semester_name',
@@ -344,7 +344,7 @@ module.exports = {
                 );
 
             if (semesters.length === 0) {
-                return res.json('There are no valid quizzes for this subject');
+                return res.status(404).json('There are no valid quizzes for this subject');
             }
 
             res.json(semesters);
@@ -381,7 +381,7 @@ module.exports = {
                     'announced',
                     'name as subject_name',
                     'resources as subject_resources',
-                    'teacher_id',
+                    // 'teacher_id',
                     'curriculum_id'
                 );
             return res.status(200).json(quizzes);
