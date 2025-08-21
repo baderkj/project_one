@@ -2,43 +2,47 @@ const Student = require('../models/Student');
 const { getSubject } = require('./subjectService');
 
 module.exports = {
-  async createStudent(studentData, trx = null) {
-    return await Student.create(studentData, trx);
-  },
-  
-  async getStudent(id) {
-    return await Student.findById(id);
-  },
-  async getCurriculumId(grade_level) {
-    return await Student.getCurriculumId(grade_level);
-  },
-  async findByUserId(id) {
-    return await Student.findByUserId(id);
-  },
-  async findByEmail(email,trx=null) {
-    return await Student.findByEmail(email,trx);
-  },
-  async getAllStudents() {
-    return await Student.findAll();
-  },
+    async createStudent(studentData, trx = null) {
+        return await Student.create(studentData, trx);
+    },
 
-  async updateStudent(id, updates) {
-    return await Student.update(id, updates);
-  },
+    async getStudent(id) {
+        return await Student.findById(id);
+    },
+    async getCurriculumId(grade_level) {
+        return await Student.getCurriculumId(grade_level);
+    },
+    async findByUserId(id) {
+        return await Student.findByUserId(id);
+    },
+    async findByEmail(email, trx = null) {
+        return await Student.findByEmail(email, trx);
+    },
+    async getAllStudents() {
+        return await Student.findAll();
+    },
 
-  async deleteStudent(id) {
-    return await Student.delete(id);
-  },
-  async getSubjects(id) {
-    return await Student.getSubjects(id);
-  },
-  async getClass(id) {
-    return await Student.getClass(id);
-  },
-  async getStudentArchive(id) {
-    return await Student.getStudentArchive(id);
-  },
-  async getStudentSchedule(id) {
-    return await Student.getStudentSchedule(id);
-  },
+    async updateStudent(id, updates) {
+        return await Student.update(id, updates);
+    },
+
+    async deleteStudent(id) {
+        return await Student.delete(id);
+    },
+    async getSubjects(id) {
+        return await Student.getSubjects(id);
+    },
+    async getClass(id) {
+        return await Student.getClass(id);
+    },
+    async getStudentArchive(id) {
+        return await Student.getStudentArchive(id);
+    },
+    async getStudentSchedule(id) {
+        return await Student.getStudentSchedule(id);
+    },
+
+    async getStudentsByClass(classId) {
+        return await Student.findByClassId(classId);
+    },
 };

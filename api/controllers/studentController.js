@@ -252,4 +252,19 @@ module.exports = {
             res.status(400).json({ error: error.message });
         }
     },
+
+    async getStudentsByClass(req, res) {
+        try {
+            const { classId } = req.params;
+            const students = await studentService.getStudentsByClass(classId);
+            if (!students || students.length === 0) {
+                return res
+                    .status(404)
+                    .json({ error: 'No students found in this class' });
+            }
+            res.json(students);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
 };

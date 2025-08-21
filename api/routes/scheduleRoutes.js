@@ -23,6 +23,13 @@ router.get(
 );
 
 router.get(
+    '/class/:classId',
+    authMiddleware,
+    hasPermission('get_schedules'),
+    scheduleController.getSchedulesByClass
+);
+
+router.get(
     '/:id',
     authMiddleware,
     hasPermission('get_schedules'),
