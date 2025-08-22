@@ -137,7 +137,9 @@ module.exports = {
                 qualification,
                 subject_ids,
             } = req.body;
-
+            console.log('Received update request for teacher:', teacherId);
+            console.log('Request body:', req.body);
+            console.log('Subject IDs:', req.body.subject_ids);
             await db.transaction(async (trx) => {
                 const updates = {};
                 if (specialization !== undefined)

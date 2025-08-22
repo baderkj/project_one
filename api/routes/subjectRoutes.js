@@ -34,6 +34,7 @@ router.get(
 );
 router.put(
     '/:id',
+    subjectValidator,
     authMiddleware,
     hasPermission('update_subject'),
     subjectController.updateSubject

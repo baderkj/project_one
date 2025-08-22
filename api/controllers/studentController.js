@@ -4,6 +4,7 @@ const roleService = require('../services/roleService');
 const ExcelService = require('../services/excelService');
 const { validationResult } = require('express-validator');
 const { db } = require('../../config/db');
+const { toDateOnly } = require('../utils/dateUtils');
 
 const bcrypt = require('bcrypt-nodejs');
 module.exports = {
@@ -137,7 +138,13 @@ module.exports = {
     async getAllStudents(req, res) {
         try {
             const student = await studentService.getAllStudents();
-            res.json(student);
+            const formattedStudents = student.map((student) => {
+                return {
+                    ...student,
+                    birth_date: toDateOnly(student.birth_date),
+                };
+            });
+            res.json(formattedStudents);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

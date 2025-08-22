@@ -27,7 +27,19 @@ class Student {
         return query;
     }
     static async findAll() {
-        return await db('students').select('*');
+        return await db('students as s')
+            .join('users as u', 's.user_id', 'u.id')
+            .join('classes as c', 's.class_id', 'c.id')
+            .select(
+                's.id',
+                'u.name as student_name',
+                'u.email',
+                'u.phone',
+                'u.birth_date',
+                's.class_id',
+                'c.class_name',
+                's.grade_level'
+            );
     }
 
     static async findByClassId(classId) {
@@ -36,7 +48,7 @@ class Student {
             .where('s.class_id', classId)
             .select(
                 's.id',
-                'u.name',
+                'u.name as student_name',
                 'u.email',
                 'u.phone',
                 'u.birth_date',
@@ -44,11 +56,18 @@ class Student {
             );
     }
 
-    static async update(id, updates) {
-        return await db('students')
+    static async update(id, studentData, userData) {
+        const student = await db('students')
             .where({ id })
-            .update(updates)
+            .update(studentData)
             .returning('*');
+
+        const user = await db('users')
+            .where({ id: student[0].user_id })
+            .update(userData)
+            .returning('*');
+        console.log(student, user);
+        return { student, user };
     }
 
     static async delete(id) {

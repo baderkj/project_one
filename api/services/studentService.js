@@ -23,7 +23,23 @@ module.exports = {
     },
 
     async updateStudent(id, updates) {
-        return await Student.update(id, updates);
+        const studentData = {
+            class_id: updates.class_id,
+            curriculum_id: updates.curriculum_id,
+            grade_level: updates.grade_level,
+        };
+        const userData = {
+            name: updates.name,
+            // email: updates.email,
+            phone: updates.phone,
+            birth_date: updates.birth_date,
+        };
+        const { student, user } = await Student.update(
+            id,
+            studentData,
+            userData
+        );
+        return { student, user };
     },
 
     async deleteStudent(id) {
