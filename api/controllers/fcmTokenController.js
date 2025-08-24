@@ -29,39 +29,77 @@ module.exports = {
 
   async sendMessage(req, res) {
     try {
-      const{user_id,title,body}=req.body;
-      const user=await userService.getUser(user_id);
-      console.log(user)
-      const role=await roleService.getRoleById(user.role_id);
-      console.log(role)
-      if(!(role[0].name=="student")){
-        throw new Error('error the user is not student ');
-       
+      const { user_id, title, body } = req.body;
+      const user = await userService.getUser(user_id);
+      
+      const role = await roleService.getRoleById(user.role_id);
+      
+      if (role[0].name !== "student") {
+        return res.status(400).json({ error: 'User is not a student' });
       }
+  
       const FcmTokens = await fcmTokensService.getTokensForUser(user_id);
-      if (!FcmTokens||FcmTokens.length==0) return res.status(404).json({ error: 'Fcm tokens  not found' });
-
+      if (!FcmTokens || FcmTokens.length === 0) {
+        return res.status(404).json({ error: 'FCM tokens not found' });
+      }
+  
+      // Extract token strings from objects (if needed)
+      const tokenStrings = FcmTokens.map(token => 
+        typeof token === 'string' ? token : token.token
+      );
+  
+      // Filter out any null/undefined tokens
+      const validTokens = tokenStrings.filter(token => 
+        token && typeof token === 'string' && token.length > 0
+      );
+  
+      if (validTokens.length === 0) {
+        return res.status(400).json({ error: 'No valid FCM tokens found' });
+      }
+  
       const message = {
         notification: { title, body },
-        data: {},
-        tokens: FcmTokens
+        data: { user_id: user_id.toString() }, // Ensure string value
+        tokens: validTokens
       };
+  
+      console.log('Sending to tokens:', validTokens);
+  
       const response = await admin.messaging().sendEachForMulticast(message);
-      if (!response) {
-        throw new Error('error in firebase');
-    }
-      const Notification = await notificationService.createNotification({
-        user_id:user_id,
-        title,
-        body,
-        sent_at: new Date()
+      console.log(response)
+      // Handle response errors
+      response.responses.forEach((resp, index) => {
+        if (!resp.success) {
+          console.error(`Failed to send to token ${validTokens[index]}:`, 
+                       resp.error?.code, resp.error?.message);
+          
+          // Remove invalid tokens from database
+          if (resp.error?.code === 'messaging/invalid-registration-token' ||
+              resp.error?.code === 'messaging/registration-token-not-registered') {
+            fcmTokensService.removeToken(validTokens[index]);
+          }
+        }
       });
-      if (!Notification) {
-        throw new Error('error in notification create');
-    }
-    console.log(response,Notification);
-      res.json({msg:'successfully'});
+  
+      // Create notification only if at least one message was successful
+      if (response.successCount > 0) {
+        const notification = await notificationService.createNotification({
+          user_id: user_id,
+          title,
+          body,
+          sent_at: new Date()
+        });
+        console.log('Notification created:', notification);
+      }
+  
+      res.json({
+        message: 'Process completed',
+        successCount: response.successCount,
+        failureCount: response.failureCount
+      });
+  
     } catch (error) {
+      console.error('Send message error:', error);
       res.status(500).json({ error: error.message });
     }
   },
