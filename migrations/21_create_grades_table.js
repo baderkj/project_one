@@ -17,12 +17,19 @@ exports.up = function (knex) {
       .references('id')
       .inTable('subjects')
       .onDelete('CASCADE');
+      table
+      .integer('semester_id')
+      .unsigned()
+      .references('id')
+      .inTable('semesters')
+      .onDelete('CASCADE');
     table.decimal('min_score', 5, 2).unsigned().notNullable();
-    table.decimal('max_grade', 5, 2).unsigned().notNullable();
+    table.decimal('max_score', 5, 2).unsigned().notNullable();
+    table.decimal('grade', 5, 2).unsigned().notNullable();
     table
       .enum('type', ['worksheet', 'exam', 'quiz', 'assignment'])
       .notNullable();
-    table.timestamps(true, true);
+    
   });
 };
 

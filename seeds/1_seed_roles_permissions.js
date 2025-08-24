@@ -172,6 +172,13 @@ exports.seed = async function (knex) {
         { name: 'get_users' },
         { name: 'update_user' },
         { name: 'delete_user' },
+        // Grades
+        { name: 'create_grade' },
+        { name: 'get_grades' },
+        { name: 'get_grade' },
+        { name: 'update_grade' },
+        { name: 'delete_grade' },
+          
     ];
 
     const permissions = await knex('permissions')
