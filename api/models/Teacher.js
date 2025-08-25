@@ -153,11 +153,23 @@ class Teacher {
     }
 
     static async getQuestions(id) {
+        // First, get all subjects assigned to the teacher
+        const teacherSubjects = await db('teachers as t')
+            .join('teachers_subjects as ts', 'ts.teacher_id', 't.id')
+            .join('subjects as s', 's.id', 'ts.subject_id')
+            .where('ts.teacher_id', id)
+            .select('s.id as subject_id', 's.name as subject_name');
+
+        if (teacherSubjects.length === 0) {
+            return [];
+        }
+
+        // Then get questions and options for those subjects (if they exist)
         const rows = await db('teachers as t')
             .join('teachers_subjects as ts', 'ts.teacher_id', 't.id')
             .join('subjects as s', 's.id', 'ts.subject_id')
-            .join('questions as q', 'q.subject_id', 'ts.subject_id')
-            .join('options as o', 'o.question_id', 'q.id')
+            .leftJoin('questions as q', 'q.subject_id', 'ts.subject_id')
+            .leftJoin('options as o', 'o.question_id', 'q.id')
             .where('ts.teacher_id', id)
             .select(
                 's.id as subject_id',
@@ -171,41 +183,52 @@ class Teacher {
             )
             .orderBy('s.id', 'q.id');
 
-        const subjectsMap = rows.reduce((acc, row) => {
-            const subjectId = row.subject_id;
+        // Initialize subjects map with all teacher subjects
+        const subjectsMap = {};
+        teacherSubjects.forEach((subject) => {
+            subjectsMap[subject.subject_id] = {
+                subject_id: subject.subject_id,
+                subject_name: subject.subject_name,
+                questions: [],
+            };
+        });
 
-            if (!acc[subjectId]) {
-                acc[subjectId] = {
-                    subject_id: row.subject_id,
-                    subject_name: row.subject_name,
-                    questions: {},
-                };
+        // Process questions and options if they exist
+        rows.forEach((row) => {
+            if (row.question_id) {
+                // Only process if question exists
+                const subjectId = row.subject_id;
+                const questionId = row.question_id;
+
+                if (
+                    !subjectsMap[subjectId].questions.find(
+                        (q) => q.question_id === questionId
+                    )
+                ) {
+                    // Add new question
+                    subjectsMap[subjectId].questions.push({
+                        question_id: row.question_id,
+                        question_text: row.question_text,
+                        type: row.type,
+                        options: [],
+                    });
+                }
+
+                // Find the question and add option
+                const question = subjectsMap[subjectId].questions.find(
+                    (q) => q.question_id === questionId
+                );
+                if (question && row.option_id) {
+                    question.options.push({
+                        option_id: row.option_id,
+                        option_text: row.option_text,
+                        is_correct: row.is_correct,
+                    });
+                }
             }
+        });
 
-            const questionId = row.question_id;
-            if (!acc[subjectId].questions[questionId]) {
-                acc[subjectId].questions[questionId] = {
-                    question_id: row.question_id,
-                    question_text: row.question_text,
-                    type: row.type,
-                    options: [],
-                };
-            }
-
-            acc[subjectId].questions[questionId].options.push({
-                option_id: row.option_id,
-                option_text: row.option_text,
-                is_correct: row.is_correct,
-            });
-
-            return acc;
-        }, {});
-
-        const result = Object.values(subjectsMap).map((subject) => ({
-            ...subject,
-            questions: Object.values(subject.questions),
-        }));
-
+        const result = Object.values(subjectsMap);
         return result;
     }
     static async getStudents(teacherId) {
